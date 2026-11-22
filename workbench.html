@@ -153,7 +153,8 @@ tr.isunit td input{color:var(--tx3)}
 .steps{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
 @media (max-width:1100px){.mapgrid{grid-template-columns:1fr}.mappanel{position:static;max-height:none}}
 @media print{header,.tabs,#banner,button{display:none}}
-body.live button[data-act="save"]{display:none}
+.qsrc{font-size:10px;color:var(--wa,#8a5a00);margin-top:3px;white-space:nowrap}
+body.ro [data-add],body.ro [data-addf],body.ro [data-addu],body.ro [data-delf],body.ro [data-dele],body.ro [data-delp],body.ro [data-delq],body.ro [data-act="import"]{display:none}
 </style>
 </head>
 <body>
@@ -162,9 +163,7 @@ body.live button[data-act="save"]{display:none}
 <span class="stat" id="stats"></span>
 <span id="savestate"></span>
 <span style="margin-left:auto"></span>
-<button class="pri" data-act="save" title="Writes everything back into this HTML file (Cmd or Ctrl + S)">Save to file</button>
-<button data-act="download" title="Downloads an updated copy of this file, for browsers that cannot save in place">Download copy</button>
-<button data-act="import" title="Merge verdicts and comments from an older workbench export (JSON)">Import notes</button>
+<button data-act="import" title="Merge verdicts, comments and answers from an exported JSON of an older workbench">Import notes</button>
 </header>
 <div id="banner"></div>
 <div class="tabs" id="tabs"></div>
@@ -175,8 +174,8 @@ body.live button[data-act="save"]{display:none}
 {
  "meta": {
   "title": "Lab screen planning ERP",
-  "version": "0.2",
-  "rev": "2026-11-22T00:00:00Z",
+  "version": "0.3",
+  "rev": "2026-11-22T19:30:00Z",
   "reviewer": "",
   "date": "2026-11-22",
   "schema": "fields-own-relations"
@@ -320,7 +319,8 @@ body.live button[data-act="save"]{display:none}
      "n": "seeding density",
      "t": "decimal",
      "s": "O",
-     "note": "Q-C02, may belong on the seeding step instead"
+     "note": "Q-C02. Default per cell type, the project can override it",
+     "chg": "changed, from Olga 22.11"
     },
     {
      "n": "seeding density unit",
@@ -434,16 +434,25 @@ body.live button[data-act="save"]{display:none}
      "note": "As in the sample protocol"
     },
     {
-     "n": "start day",
-     "t": "int",
+     "n": "duration",
+     "t": "decimal",
      "s": "P",
-     "note": "Q-P01, counted from day 0"
+     "note": "Q-P01. Phases run one after another",
+     "chg": "from Olga 22.11"
     },
     {
-     "n": "end day",
-     "t": "int",
+     "n": "duration unit",
+     "t": "ref MD-14",
      "s": "P",
-     "note": "Q-P01"
+     "note": "hours or days",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "starts at",
+     "t": "derived",
+     "s": "P",
+     "note": "Q-P01. Sum of the durations of the phases before it, counted from day 0",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "duration variability",
@@ -455,7 +464,7 @@ body.live button[data-act="save"]{display:none}
      "n": "duration variability unit",
      "t": "ref MD-14",
      "s": "P",
-     "note": "days"
+     "note": "same as the duration"
     },
     {
      "n": "cell type",
@@ -512,7 +521,7 @@ body.live button[data-act="save"]{display:none}
      "note": "Job ad mentions monitoring differentiation quality"
     }
    ],
-   "chg": "Added 'cell type' so a phase can find its default medium. Renamed 'vessel' to 'plate format'. Removed 'feeding regime', which repeated what the phase's steps already say.",
+   "chg": "Added 'cell type' so a phase can find its default medium. Renamed 'vessel' to 'plate format'. Removed 'feeding regime', which repeated what the phase's steps already say. From Olga's prototype: a duration instead of start and end day, so phases cannot overlap or leave gaps. The start is calculated.",
    "ck": "confirm",
    "ord": 3
   },
@@ -548,28 +557,39 @@ body.live button[data-act="save"]{display:none}
      "note": "Q-P03, coating, seeding, feeding, replating, transduction, treatment, lysis, imaging, readout"
     },
     {
-     "n": "day pattern",
-     "t": "text",
-     "s": "P",
-     "note": "Q-P02. For steps inside a phase: explicit days or every n days"
-    },
-    {
      "n": "anchor",
      "t": "enum",
      "s": "P",
-     "note": "For readout steps: treatment day, protocol end or readout day"
+     "note": "Phase start for steps inside a phase. For readout steps: treatment day, protocol end or readout day",
+     "chg": "changed, from Olga 22.11"
     },
     {
-     "n": "offset",
-     "t": "int",
+     "n": "first at",
+     "t": "decimal",
      "s": "P",
-     "note": "Negative is before the anchor, for example sensors five days before treatment"
+     "note": "Q-P02. Counted from the anchor. Negative is before it, for example sensors five days before treatment",
+     "chg": "renamed, from Olga 22.11"
     },
     {
-     "n": "offset unit",
+     "n": "first at unit",
      "t": "ref MD-14",
      "s": "P",
-     "note": "days"
+     "note": "hours or days",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "repeat every",
+     "t": "decimal",
+     "s": "O",
+     "note": "Q-P02. Empty means once. Repeats until the phase ends, for example a medium change every 48 hours",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "repeat every unit",
+     "t": "ref MD-14",
+     "s": "P",
+     "note": "hours or days",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "time window",
@@ -637,7 +657,7 @@ body.live button[data-act="save"]{display:none}
      "l": "comes after"
     }
    ],
-   "chg": "Materials, devices and external service moved into the new Step resource. Removed 'volume basis' (the phase holds the volume). 'Allowed on non-working days' moved here from the calendar, so each step decides for itself.",
+   "chg": "Materials, devices and external service moved into the new Step resource. Removed 'volume basis' (the phase holds the volume). 'Allowed on non-working days' moved here from the calendar, so each step decides for itself. From Olga's prototype: 'first at' and 'repeat every' replace the free-text day pattern. Times are decimals with a unit, so hours work as well as days.",
    "ck": "confirm",
    "ord": 4
   },
@@ -792,13 +812,27 @@ body.live button[data-act="save"]{display:none}
      "n": "working volume per well",
      "t": "decimal",
      "s": "O",
-     "note": "Q-L01, default, a phase may override"
+     "note": "Q-L01, default, a phase or the project may override it"
     },
     {
      "n": "working volume per well unit",
      "t": "ref MD-14",
      "s": "P",
      "note": "volume"
+    },
+    {
+     "n": "max volume per well",
+     "t": "decimal",
+     "s": "O",
+     "note": "For the overfill warning. Olga's prototype warns above 150 µL on 384 and 350 µL on 96 wells, demo values",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "max volume per well unit",
+     "t": "ref MD-14",
+     "s": "P",
+     "note": "volume",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "surface area per well",
@@ -827,7 +861,7 @@ body.live button[data-act="save"]{display:none}
      "note": "Q-P03"
     }
    ],
-   "chg": "Removed 'other vessels': a flask is simply another plate format.",
+   "chg": "Removed 'other vessels': a flask is simply another plate format. From Olga's prototype: a maximum volume per well, used to warn when a plate would be overfilled.",
    "ck": "confirm",
    "ord": 0
   },
@@ -942,17 +976,13 @@ body.live button[data-act="save"]{display:none}
      "note": "depends on the spec type"
     },
     {
-     "n": "stock concentration override",
-     "t": "decimal",
-     "s": "O",
-     "note": "Q-R02, only when this recipe uses a different stock than the material normally has",
-     "chg": "renamed 22.11"
-    },
-    {
-     "n": "stock concentration override unit",
-     "t": "ref MD-14",
+     "n": "stock solution",
+     "t": "ref MD-07S",
      "s": "P",
-     "note": "concentration"
+     "note": "Q-R02. Which stock is pipetted. Empty when the material goes in as it is",
+     "opt": true,
+     "l": "is pipetted from",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "add timing",
@@ -967,7 +997,7 @@ body.live button[data-act="save"]{display:none}
      "note": "For the printed recipe sheet"
     }
    ],
-   "chg": "Stock concentration is now an optional override of the material's own. Removed 'own shelf life after thaw', which already lives on the material. 'Fill to volume' left the spec types because the base medium sits on the recipe.",
+   "chg": "Stock concentration is now an optional override of the material's own. Removed 'own shelf life after thaw', which already lives on the material. 'Fill to volume' left the spec types because the base medium sits on the recipe. From Olga's prototype: the line picks a stock solution instead of overriding a concentration.",
    "ck": "confirm",
    "ord": 2
   },
@@ -1005,16 +1035,11 @@ body.live button[data-act="save"]{display:none}
      "note": ""
     },
     {
-     "n": "stock concentration",
-     "t": "decimal",
-     "s": "O",
-     "note": "Q-R02"
-    },
-    {
-     "n": "stock concentration unit",
-     "t": "ref MD-14",
+     "n": "stock solutions",
+     "t": "list MD-07S",
      "s": "P",
-     "note": "concentration"
+     "note": "",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "storage condition",
@@ -1065,7 +1090,7 @@ body.live button[data-act="save"]{display:none}
      "note": "same as the base unit"
     }
    ],
-   "chg": "Pack size and price moved to Supplier article, because they differ per supplier.",
+   "chg": "Pack size and price moved to Supplier article, because they differ per supplier. From Olga's prototype: stock concentration moved to the new Stock solution, so one material can have several.",
    "ck": "confirm",
    "ord": 3
   },
@@ -1627,7 +1652,8 @@ body.live button[data-act="save"]{display:none}
      "n": "overage on media volume",
      "t": "decimal",
      "s": "O",
-     "note": "Q-R06"
+     "note": "Q-R06. Default, a project can override it",
+     "chg": "changed, from Olga 22.11"
     },
     {
      "n": "overage on media volume unit",
@@ -1817,11 +1843,10 @@ body.live button[data-act="save"]{display:none}
     },
     {
      "n": "readouts",
-     "t": "list MD-11",
+     "t": "list TD-01R",
      "s": "B",
-     "note": "",
-     "l": "is measured with",
-     "chg": "new 22.11"
+     "note": "With their settings for this screen",
+     "chg": "changed, from Olga 22.11"
     },
     {
      "n": "conditions",
@@ -1831,16 +1856,88 @@ body.live button[data-act="save"]{display:none}
      "chg": "new 22.11"
     },
     {
-     "n": "replicates",
+     "n": "replicate wells per condition",
      "t": "int",
      "s": "B",
-     "note": "Q-L03, default for all conditions"
+     "note": "Q-L03. Wells with the same condition on one plate. Default for all conditions",
+     "chg": "renamed, from Olga 22.11"
+    },
+    {
+     "n": "replicate plates",
+     "t": "int",
+     "s": "P",
+     "note": "Q-L03. Identical copies of each plate layout",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "screen plate format",
+     "t": "ref MD-09",
+     "s": "B",
+     "note": "From the input form, for example 96 or 384 wells. Has to be one the readouts support",
+     "l": "is screened on",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "seeding density",
+     "t": "decimal",
+     "s": "O",
+     "note": "Q-C02. Overrides the seeding density of the target cell type when set",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "seeding density unit",
+     "t": "ref MD-14",
+     "s": "P",
+     "note": "cells per well",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "working volume per well",
+     "t": "decimal",
+     "s": "O",
+     "note": "Q-L01. Overrides the plate format and phase default on the screening plates when set",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "working volume per well unit",
+     "t": "ref MD-14",
+     "s": "P",
+     "note": "volume",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "overage",
+     "t": "decimal",
+     "s": "O",
+     "note": "Overrides the global setting in Calculation settings when set. Olga's prototype applies it to medium and cells",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "overage unit",
+     "t": "ref MD-14",
+     "s": "P",
+     "note": "percent",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "exposure time",
+     "t": "decimal",
+     "s": "O",
+     "note": "Q-S03. Default for all conditions",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "exposure time unit",
+     "t": "ref MD-14",
+     "s": "P",
+     "note": "hours or days",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "controls",
      "t": "text",
      "s": "O",
-     "note": "Q-L02, may become conditions with the role control"
+     "note": "Q-L02, Q-OP01. May become conditions with the role control"
     },
     {
      "n": "desired date",
@@ -1883,13 +1980,20 @@ body.live button[data-act="save"]{display:none}
      "note": ""
     },
     {
+     "n": "plate layouts",
+     "t": "list TD-03L",
+     "s": "P",
+     "note": "",
+     "chg": "from Olga 22.11"
+    },
+    {
      "n": "notes",
      "t": "text",
      "s": "P",
      "note": ""
     }
    ],
-   "chg": "Added start and target cell type, readouts and conditions. 'Protocol snapshot' became the protocol chain. Removed 'request parameters', which only repeated the fields themselves. Bundled fields split.",
+   "chg": "Added start and target cell type, readouts and conditions. 'Protocol snapshot' became the protocol chain. Removed 'request parameters', which only repeated the fields themselves. Bundled fields split. From Olga's prototype: two replicate levels (wells per condition and identical plates). The screen's plate format, seeding density, working volume, overage and exposure time are project values that override the defaults. Readouts carry their own settings. Plate layouts added.",
    "ck": "confirm",
    "ord": 0
   },
@@ -1898,7 +2002,7 @@ body.live button[data-act="save"]{display:none}
    "area": "D",
    "n": "Condition",
    "d": "One treatment being tested: a substance at a dose, given at a certain step.",
-   "w": "Connects the compound to the plan. Each well receives one condition, so conditions times replicates gives the number of wells.",
+   "w": "Connects the compound to the plan. Each well receives one condition: conditions times replicate wells fill the layouts, and each layout is copied onto the replicate plates.",
    "v": "",
    "c": "",
    "f": [
@@ -1945,7 +2049,7 @@ body.live button[data-act="save"]{display:none}
      "n": "exposure time",
      "t": "decimal",
      "s": "O",
-     "note": "Q-S03"
+     "note": "Q-S03, only if different from the project default"
     },
     {
      "n": "exposure time unit",
@@ -1954,19 +2058,20 @@ body.live button[data-act="save"]{display:none}
      "note": "hours or days"
     },
     {
-     "n": "replicates",
+     "n": "replicate wells",
      "t": "int",
      "s": "O",
-     "note": "Q-L03, only if different from the project default"
+     "note": "Q-L03, only if different from the project default",
+     "chg": "renamed, from Olga 22.11"
     },
     {
      "n": "role",
      "t": "enum",
      "s": "O",
-     "note": "Q-L02, sample, vehicle control, positive control"
+     "note": "Q-L02, Q-OP01, sample, vehicle control, positive control"
     }
    ],
-   "chg": "New entity. Replaces the loose conditions list on the project, connects Substance to the plan and gives the dose a unit.",
+   "chg": "New entity. Replaces the loose conditions list on the project, connects Substance to the plan and gives the dose a unit. From Olga's prototype: replicates now means wells on one plate. Exposure time defaults from the project.",
    "ck": "confirm",
    "ord": 1
   },
@@ -2020,7 +2125,7 @@ body.live button[data-act="save"]{display:none}
    "id": "TD-03",
    "area": "D",
    "n": "Plate",
-   "d": "One physical plate in the screen.",
+   "d": "One physical plate in the screen, a copy of one plate layout.",
    "w": "Carries the format and belongs to a batch. Cost per plate is reported on this level.",
    "v": "",
    "c": "",
@@ -2039,27 +2144,28 @@ body.live button[data-act="save"]{display:none}
      "note": "Q-I02"
     },
     {
-     "n": "plate format",
-     "t": "ref MD-09",
-     "s": "B",
-     "note": "",
-     "l": "is of"
+     "n": "layout",
+     "t": "ref TD-03L",
+     "s": "P",
+     "note": "Which layout this plate is a copy of",
+     "l": "is a copy of",
+     "chg": "from Olga 22.11"
+    },
+    {
+     "n": "copy number",
+     "t": "int",
+     "s": "P",
+     "note": "From 1 to the replicate plates of the project",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "is spare",
      "t": "bool",
      "s": "O",
      "note": "Q-L04"
-    },
-    {
-     "n": "wells",
-     "t": "list TD-03W",
-     "s": "P",
-     "note": "",
-     "chg": "new 22.11"
     }
    ],
-   "chg": "Split: wells are their own entity now. Removed 'cell line and cell type', which follow from the batch and the phase.",
+   "chg": "Split: wells are their own entity now. Removed 'cell line and cell type', which follow from the batch and the phase. From Olga's prototype: a plate is a copy of a plate layout, which holds the wells. The plate format comes from the project.",
    "ck": "confirm",
    "ord": 3
   },
@@ -2067,17 +2173,18 @@ body.live button[data-act="save"]{display:none}
    "id": "TD-03W",
    "area": "D",
    "n": "Well",
-   "d": "One well on a plate.",
-   "w": "Where a condition actually lands. Needed for the plate map and for one LIMS sample per well.",
+   "d": "One well position in a plate layout and what goes into it.",
+   "w": "Every plate copied from the layout has the same well. The calculation counts filled wells per layout times the number of copies.",
    "v": "",
    "c": "",
    "f": [
     {
-     "n": "plate",
-     "t": "ref TD-03",
+     "n": "layout",
+     "t": "ref TD-03L",
      "s": "P",
      "note": "Structural link, holds the model together. Not a question for the lab.",
-     "l": "sits on"
+     "l": "is part of",
+     "chg": "moved, from Olga 22.11"
     },
     {
      "n": "position",
@@ -2089,7 +2196,7 @@ body.live button[data-act="save"]{display:none}
      "n": "role",
      "t": "enum",
      "s": "O",
-     "note": "Q-L02, sample, vehicle, positive, untreated, empty, edge excluded"
+     "note": "Q-L02, Q-OP01, sample, vehicle, positive, untreated, empty, edge excluded"
     },
     {
      "n": "condition",
@@ -2103,10 +2210,10 @@ body.live button[data-act="save"]{display:none}
      "n": "replicate number",
      "t": "int",
      "s": "B",
-     "note": ""
+     "note": "Which of the replicate wells of its condition this is"
     }
    ],
-   "chg": "New entity. Split from Plate.",
+   "chg": "New entity. Split from Plate. From Olga's prototype: belongs to a plate layout instead of one physical plate.",
    "ck": "confirm",
    "ord": 4
   },
@@ -2135,9 +2242,17 @@ body.live button[data-act="save"]{display:none}
      "n": "well",
      "t": "ref TD-03W",
      "s": "P",
-     "note": "Project, plate, substance and replicate follow from the well",
+     "note": "The well position. Project, substance and replicate follow from it",
      "l": "comes from",
      "chg": "new 22.11"
+    },
+    {
+     "n": "plate",
+     "t": "ref TD-03",
+     "s": "P",
+     "note": "The physical plate the sample comes from, because all copies of a layout share the well positions",
+     "l": "is taken from",
+     "chg": "from Olga 22.11"
     },
     {
      "n": "readout",
@@ -2167,8 +2282,8 @@ body.live button[data-act="save"]{display:none}
      "chg": "split 22.11"
     }
    ],
-   "chg": "Now points at one well instead of a bundle of project, plate, well, substance and replicate.",
-   "ck": "tidy",
+   "chg": "Now points at one well instead of a bundle of project, plate, well, substance and replicate. From Olga's prototype: names the plate as well as the well.",
+   "ck": "confirm",
    "ord": 5
   },
   {
@@ -3145,6 +3260,131 @@ body.live button[data-act="save"]{display:none}
    "chg": "New entity. Split from Cost line.",
    "ck": "confirm",
    "ord": 6
+  },
+  {
+   "id": "TD-01R",
+   "area": "D",
+   "ord": 0.5,
+   "n": "Project readout",
+   "d": "One readout chosen for a project, with its settings for this screen.",
+   "w": "The same readout can run with different settings per screen, for example how many biosensors the pathwayPROFILER panel has.",
+   "v": "",
+   "c": "",
+   "f": [
+    {
+     "n": "project",
+     "t": "ref TD-01",
+     "s": "P",
+     "note": "Structural link, holds the model together. Not a question for the lab.",
+     "l": "is measured with"
+    },
+    {
+     "n": "readout",
+     "t": "ref MD-11",
+     "s": "B",
+     "note": "",
+     "l": "uses"
+    },
+    {
+     "n": "number of biosensors",
+     "t": "int",
+     "s": "O",
+     "note": "pathwayPROFILER only. Does not need extra wells"
+    },
+    {
+     "n": "notes",
+     "t": "text",
+     "s": "P",
+     "note": ""
+    }
+   ],
+   "chg": "New entity, from Olga's prototype. Turns the plain readout list on the project into a link that can hold settings per screen.",
+   "ck": "confirm"
+  },
+  {
+   "id": "TD-03L",
+   "area": "D",
+   "ord": 2.5,
+   "n": "Plate layout",
+   "d": "One way of filling a plate: what goes into which well.",
+   "w": "Identical replicate plates are copies of one layout, so the wells are planned once. When the conditions do not fit on one plate, the next layout starts. Uses the screen plate format of the project.",
+   "v": "",
+   "c": "",
+   "f": [
+    {
+     "n": "project",
+     "t": "ref TD-01",
+     "s": "P",
+     "note": "Structural link, holds the model together. Not a question for the lab.",
+     "l": "belongs to"
+    },
+    {
+     "n": "layout number",
+     "t": "int",
+     "s": "P",
+     "note": ""
+    },
+    {
+     "n": "wells",
+     "t": "list TD-03W",
+     "s": "P",
+     "note": ""
+    },
+    {
+     "n": "plates",
+     "t": "list TD-03",
+     "s": "P",
+     "note": "The physical copies"
+    }
+   ],
+   "chg": "New entity, from Olga's prototype. The wells moved here from the plate.",
+   "ck": "confirm"
+  },
+  {
+   "id": "MD-07S",
+   "area": "B",
+   "ord": 3.5,
+   "n": "Stock solution",
+   "d": "A ready-to-use stock of a material at a known strength, for example EGF at 100 µg/mL.",
+   "w": "A material can have several stocks. The recipe line says which one it is pipetted from, so the volume to add can be calculated.",
+   "v": "",
+   "c": "",
+   "f": [
+    {
+     "n": "material",
+     "t": "ref MD-07",
+     "s": "P",
+     "note": "Structural link, holds the model together. Not a question for the lab.",
+     "l": "is a stock of"
+    },
+    {
+     "n": "name",
+     "t": "text",
+     "s": "P",
+     "note": ""
+    },
+    {
+     "n": "concentration",
+     "t": "decimal",
+     "s": "O",
+     "note": "Q-R02"
+    },
+    {
+     "n": "concentration unit",
+     "t": "ref MD-14",
+     "s": "P",
+     "note": "molar, mass per volume, x or percent",
+     "chg": ""
+    },
+    {
+     "n": "notes",
+     "t": "text",
+     "s": "P",
+     "note": "Supplier, or how it is made"
+    }
+   ],
+   "chg": "New entity, from Olga's prototype. Replaces the single stock concentration on the material and the override on the recipe line.",
+   "ck": "confirm"
   }
  ],
  "processes": [
@@ -3163,7 +3403,7 @@ body.live button[data-act="save"]{display:none}
    "id": "P-02",
    "n": "Request intake",
    "o": "Customer inquiry or internal screen",
-   "steps": "Fill the input form, derived counts shown live\nValidate, list what is missing instead of defaulting\nSave as project in draft\nRun the calculation",
+   "steps": "Fill the input form, derived counts shown live\nValidate, list what is missing instead of defaulting\nSave as project in draft\nRun the calculation\nCheck that every step falls inside its phase (from Olga's prototype)\nWarn when the working volume is above the plate format's maximum (from Olga's prototype)\nOptionally build a dose series from lowest dose, highest dose and number of points, evenly spaced on a log scale (from Olga's prototype)",
    "out": "Project and calculation run",
    "q": "Today a quote takes hours, target is minutes",
    "v": "",
@@ -3174,9 +3414,9 @@ body.live button[data-act="save"]{display:none}
    "id": "P-03",
    "n": "Layout expansion",
    "o": "Engine stage 1",
-   "steps": "Take the conditions entered on the project\nMultiply by replicates at the configured level\nAdd control wells\nFit into plates using usable wells, add spares\nGroup plates into batches\nOptionally generate the full well map",
-   "out": "Conditions, wells, plates, batches",
-   "q": "Q-L02, Q-L03, Q-L04, Q-K03",
+   "steps": "Take the conditions entered on the project\nRepeat each condition by its replicate wells\nReserve the control wells on every layout first, then fill the conditions row by row from A1 (from Olga's prototype), controls see Q-OP01\nRoom per layout is the usable wells minus the control wells, what does not fit starts the next layout (from Olga's prototype)\nCopy every layout onto the replicate plates, add spares (from Olga's prototype)\nGroup plates into batches\nCells needed = filled wells times seeding density, plus overage (from Olga's prototype)",
+   "out": "Layouts, plates, batches, cells needed",
+   "q": "Q-L02, Q-L03, Q-L04, Q-K03, Q-OP01",
    "v": "",
    "c": "",
    "prio": ""
@@ -3196,7 +3436,7 @@ body.live button[data-act="save"]{display:none}
    "id": "P-05",
    "n": "Media calculation",
    "o": "Engine stage 3, likely the core of the reference",
-   "steps": "Per feeding task find the medium, the phase override or else the cell type default, and compute the event volume\nGroup events of the same recipe into preparations within shelf life\nPreparation volume is covered demand plus overage, then rounded\nCompute each component amount by its spec type\nBase medium fills the remainder to volume\nComponents added fresh at use are computed per event\nProduce recipe sheets and the media plan",
+   "steps": "Per feeding task find the medium, the phase override or else the cell type default, and compute the event volume\nGroup events of the same recipe into preparations within shelf life\nPreparation volume is covered demand plus overage, then rounded\nCompute each component amount by its spec type\nFinal concentration from a stock: volume to add = preparation volume times final concentration divided by stock concentration, only within one unit family (molar, mass per volume, x, percent). Refuse when the stock is weaker than the target (from Olga's prototype)\nBase medium fills the remainder to volume\nComponents added fresh at use are computed per event\nProduce recipe sheets and the media plan",
    "out": "Preparations, component amounts, expiry dates",
    "q": "Q-R02 to Q-R07",
    "v": "",
@@ -3262,7 +3502,7 @@ body.live button[data-act="save"]{display:none}
    "id": "P-11",
    "n": "LIMS export",
    "o": "After layout and readout are known",
-   "steps": "Generate the sample list from the well map and sample level\nAssign sample ids by the house convention\nExport in the target format, CSV for the prototype",
+   "steps": "Generate the sample list from the plates, their layouts and sample level\nAssign sample ids by the house convention\nExport in the target format, CSV for the prototype",
    "out": "Sample list file",
    "q": "Q-I01, Q-I02, Q-O03",
    "v": "",
@@ -3737,6 +3977,51 @@ body.live button[data-act="save"]{display:none}
    "w": "Expert",
    "a": "",
    "st": "open"
+  },
+  {
+   "id": "Q-OP01",
+   "t": "Controls: a fixed number of wells on every plate layout, as in Olga's prototype (untreated, vehicle and positive, 4 wells each), or conditions with a control role that are repeated like samples",
+   "p": "A",
+   "w": "Systasy",
+   "a": "",
+   "st": "open",
+   "src": "olga"
+  },
+  {
+   "id": "Q-OP02",
+   "t": "Starting material: does a screen start from frozen iPSCs or from a running culture, is that chosen per project, and does a frozen start add a thaw and recovery phase",
+   "p": "B",
+   "w": "Systasy",
+   "a": "",
+   "st": "open",
+   "src": "olga"
+  },
+  {
+   "id": "Q-OP03",
+   "t": "Cell model: Olga's prototype groups the allowed starting materials and cell types into one cell model. Do we need that grouping, and does every screen run on one specific cell line (donor)",
+   "p": "B",
+   "w": "Systasy",
+   "a": "",
+   "st": "open",
+   "src": "olga"
+  },
+  {
+   "id": "Q-OP04",
+   "t": "Base medium as a mix, for example DMEM and Ham's F-12 at 1:1: bought as one material, or mixed in parts inside the recipe",
+   "p": "B",
+   "w": "Expert",
+   "a": "",
+   "st": "open",
+   "src": "olga"
+  },
+  {
+   "id": "Q-OP05",
+   "t": "Phase transitions (keep medium and vessel, change medium, replate): do they say anything that the steps and the phase's medium and plate format do not",
+   "p": "C",
+   "w": "Expert",
+   "a": "",
+   "st": "open",
+   "src": "olga"
   }
  ],
  "modules": [
@@ -3819,12 +4104,11 @@ body.live button[data-act="save"]{display:none}
 "use strict";
 var STYLE_TXT=document.getElementById("wb-style").textContent;
 var APP_TXT=document.currentScript.textContent;
-var SHELL_TXT="<header>\n<h1 id=\"ttl\">Lab ERP model</h1>\n<span class=\"stat\" id=\"stats\"></span>\n<span id=\"savestate\"></span>\n<span style=\"margin-left:auto\"></span>\n<button class=\"pri\" data-act=\"save\" title=\"Writes everything back into this HTML file (Cmd or Ctrl + S)\">Save to file</button>\n<button data-act=\"download\" title=\"Downloads an updated copy of this file, for browsers that cannot save in place\">Download copy</button>\n<button data-act=\"import\" title=\"Merge verdicts and comments from an older workbench export (JSON)\">Import notes</button>\n</header>\n<div id=\"banner\"></div>\n<div class=\"tabs\" id=\"tabs\"></div>\n<main id=\"main\"></main>\n<input type=\"file\" id=\"impfile\" accept=\".json\" style=\"display:none\">\n<datalist id=\"typelist\"></datalist>\n";
+var SHELL_TXT="<header>\n<h1 id=\"ttl\">Lab ERP model</h1>\n<span class=\"stat\" id=\"stats\"></span>\n<span id=\"savestate\"></span>\n<span style=\"margin-left:auto\"></span>\n<button data-act=\"import\" title=\"Merge verdicts, comments and answers from an exported JSON of an older workbench\">Import notes</button>\n</header>\n<div id=\"banner\"></div>\n<div class=\"tabs\" id=\"tabs\"></div>\n<main id=\"main\"></main>\n<input type=\"file\" id=\"impfile\" accept=\".json\" style=\"display:none\">\n<datalist id=\"typelist\"></datalist>\n";
 var state=JSON.parse(document.getElementById("model-data").textContent);
-var FILE_REV=state.meta.rev;
-var DRAFT_KEY="laberp-draft-v2",OLD_KEY="laberp-workbench-v1",OLD_DONE="laberp-old-merged";
-var dirty=false,handle=null,autoT=null,saveErr="",savedAt=null,blockAuto=false;
-var tab="map",sel=null,hov=null,zoom=1,focusId=null,filt="all",query="",hlMode="none",pfilt="all";
+var OLD_KEY="laberp-workbench-v1";
+var dirty=false,savedAt=null,READONLY=true;
+var tab="map",sel=null,hov=null,zoom=1,focusId=null,filt="all",query="",hlMode="none",pfilt="all",qfilt="all";
 var openF={};
 var LIVE=false,REV=0,base=null,inflight=false,pushT=null,netErr="",API="api/state";
 
@@ -3909,48 +4193,9 @@ function fileText(st){
   var json=JSON.stringify(st||state,null,1).replace(/</g,"\\u003c");
   return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>Lab ERP model</title>\n<style id="wb-style">'+STYLE_TXT+'</style>\n</head>\n<body>\n'+SHELL_TXT+'<script type="application/json" id="model-data">\n'+json+'\n</scr'+'ipt>\n<script>'+APP_TXT+'</scr'+'ipt>\n</body>\n</html>\n';
 }
-function revOf(text){var m=/"rev":\s*"([^"]+)"/.exec(text||"");return m?m[1]:null}
 function touch(){
-  dirty=true;
-  if(LIVE){clearTimeout(pushT);pushT=setTimeout(push,600);saveState();stats();return}
-  try{localStorage.setItem(DRAFT_KEY,JSON.stringify({base:FILE_REV,at:Date.now(),state:state}))}catch(e){}
-  if(handle&&!blockAuto){clearTimeout(autoT);autoT=setTimeout(function(){save(true)},1400)}
-  saveState();stats();
-}
-function markSaved(){dirty=false;FILE_REV=state.meta.rev;savedAt=new Date();saveErr="";try{localStorage.removeItem(DRAFT_KEY)}catch(e){}saveState()}
-async function save(auto){
-  if(LIVE){clearTimeout(pushT);push();return}
-  if(!window.showSaveFilePicker){if(!auto)download();return}
-  try{
-    if(!handle){
-      if(auto)return;
-      var h=await window.showSaveFilePicker({suggestedName:"workbench.html",types:[{description:"Workbench",accept:{"text/html":[".html"]}}]});
-      try{var cur=await (await h.getFile()).text();
-        if(cur&&cur.indexOf('id="model-data"')<0&&cur.length>0){if(!confirm("That file does not look like this workbench. Overwrite it anyway?"))return}
-        var dr=revOf(cur);
-        if(dr&&dr!==FILE_REV&&!confirm("That file was saved more recently (maybe by someone else, or a git pull) than the version you have open. Overwrite it with your version?"))return;
-      }catch(e){}
-      handle=h;
-    }else{
-      try{var now=await (await handle.getFile()).text(),r=revOf(now);
-        if(r&&r!==FILE_REV){blockAuto=true;saveErr="The file changed on disk since you opened it, maybe a git pull. Autosave paused.";saveState();
-          banner("err","The file on disk has changed since you opened it (maybe a git pull or another window). Your edits are safe in this browser as a draft. Reload the file to see the new version, or overwrite it with yours.",[["Overwrite with mine","force"],["Reload","reload"]]);return}
-      }catch(e){}
-    }
-    state.meta.rev=new Date().toISOString();
-    var w=await handle.createWritable();await w.write(fileText());await w.close();
-    markSaved();
-  }catch(e){if(e&&e.name==="AbortError")return;saveErr="Could not save: "+(e&&e.message||e);saveState()}
-}
-async function forceSave(){blockAuto=false;try{state.meta.rev=new Date().toISOString();var w=await handle.createWritable();await w.write(fileText());await w.close();markSaved();clearBanner("err")}catch(e){saveErr="Could not save: "+e.message;saveState()}}
-function download(){
-  var st=state;
-  if(LIVE){st=clone(state);st.meta.rev=new Date().toISOString()}else state.meta.rev=new Date().toISOString();
-  var b=new Blob([fileText(st)],{type:"text/html;charset=utf-8"}),u=URL.createObjectURL(b),a=document.createElement("a");
-  a.href=u;a.download="workbench.html";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},3000);
-  if(LIVE)return;
-  markSaved();
-  if(!window.showSaveFilePicker)banner("info","Downloaded an updated workbench.html. Replace the file in the repository with it, then commit.",[["OK","close"]]);
+  if(!LIVE)return;
+  dirty=true;clearTimeout(pushT);pushT=setTimeout(push,600);saveState();stats();
 }
 function saveState(){
   var el=document.getElementById("savestate");if(!el)return;
@@ -3958,13 +4203,10 @@ function saveState(){
     if(netErr){el.className="ss-err";el.textContent=netErr;return}
     if(dirty){el.className="ss-dirty";el.textContent="Live, saving…";return}
     el.className="ss-saved";el.textContent="Live, everything saved"+(savedAt?" "+savedAt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"");return}
-  if(saveErr){el.className="ss-err";el.textContent=saveErr;return}
-  if(dirty){el.className="ss-dirty";el.textContent=handle?"Saving…":"Unsaved changes, kept in this browser until you save";return}
-  if(savedAt){el.className="ss-saved";el.textContent="Saved to file "+savedAt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});return}
-  el.className="";el.textContent="";
+  el.className="ss-dirty";el.textContent="Read only";
 }
 window.addEventListener("beforeunload",function(ev){if(dirty){ev.preventDefault();ev.returnValue=""}});
-document.addEventListener("keydown",function(ev){if((ev.metaKey||ev.ctrlKey)&&ev.key.toLowerCase()==="s"){ev.preventDefault();save(false)}});
+document.addEventListener("keydown",function(ev){if((ev.metaKey||ev.ctrlKey)&&ev.key.toLowerCase()==="s"){ev.preventDefault();if(LIVE){clearTimeout(pushT);push()}}});
 
 /* ---------- banners: drafts, old notes ---------- */
 var BANS=[];
@@ -3972,7 +4214,7 @@ function banner(kind,text,acts,key){BANS=BANS.filter(function(b){return !(key&&b
 function clearBanner(key){BANS=BANS.filter(function(b){return b.key!==key});drawBanners()}
 function drawBanners(){document.getElementById("banner").innerHTML=BANS.map(function(b,i){return '<div class="ban '+(b.kind==="info"?"info":b.kind==="err"?"err":"")+'"><span>'+b.text+'</span>'+b.acts.map(function(a){return '<button class="sm" data-ban="'+i+'" data-bact="'+a[1]+'">'+esc(a[0])+'</button>'}).join("")+'</div>'}).join("")}
 function oldNotes(){
-  try{var raw=localStorage.getItem(OLD_KEY);if(!raw||localStorage.getItem(OLD_DONE))return null;var o=JSON.parse(raw);return countNotes(o)?o:null}catch(e){return null}
+  try{var raw=localStorage.getItem(OLD_KEY);if(!raw)return null;var o=JSON.parse(raw);return countNotes(o)?o:null}catch(e){return null}
 }
 function countNotes(o){
   var n=0;(o.entities||[]).forEach(function(e){if(e.v)n++;if(e.c)n++});
@@ -3995,16 +4237,9 @@ function mergeNotes(o){
   return n;
 }
 function startupBanners(){
-  try{var d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
-    if(d&&d.state){
-      var when=new Date(d.at).toLocaleString();
-      if(d.base===FILE_REV){if(JSON.stringify(d.state)!==JSON.stringify(state))banner("warn","This browser holds unsaved edits to this file from "+esc(when)+".",[["Restore them","restore"],["Discard","discard"]],"draft")}
-      else banner("warn","This browser holds unsaved edits from "+esc(when)+", made to an older version of this file. The file has been updated since, so they are not applied automatically.",[["Download them as JSON","dldraft"],["Discard","discard"]],"draft");
-    }}catch(e){}
+  banner("info","Read only. This copy was opened from a file or without the server. The team edits the live version on the server, where every change is saved automatically.",[["OK","close"]],"ro");
   var o=oldNotes();
-  if(o)banner("info","Found review notes from the previous workbench version in this browser ("+countNotes(o)+" verdicts, comments or answers). They can be merged into this model.",[["Merge them in","mergeold"],["Not now","close"]],"old");
-  banner("info","This is an offline copy of the model. Edits here are saved into this file only and do not reach the team's live version.",[["OK","close"]],"offline");
-  if(!window.showSaveFilePicker)banner("info","This browser cannot save into the file directly. Use Download copy and replace workbench.html in the repository, or open the file in Chrome or Edge to save in place.",[["OK","close"]],"nofsa");
+  if(o)banner("info","This browser still holds review notes from the earliest workbench version ("+countNotes(o)+" verdicts, comments or answers). Download them, then use Import notes on the live version to merge them in.",[["Download notes","dlold"],["Not now","close"]],"old");
 }
 
 /* ---------- live mode (served by server/server.py) ---------- */
@@ -4073,7 +4308,7 @@ async function poll(){
 async function goLive(){
   if(!/^https?:$/.test(location.protocol))return false;
   try{var r=await fetch(API,{cache:"no-store"});if(!r.ok)return false;var j=await r.json();if(!j||!j.state)return false;
-    LIVE=true;REV=j.rev;base=j.state;state=clone(j.state);FILE_REV=state.meta.rev;return true}catch(e){return false}
+    LIVE=true;REV=j.rev;base=j.state;state=clone(j.state);READONLY=false;return true}catch(e){return false}
 }
 
 /* ---------- stats ---------- */
@@ -4091,6 +4326,8 @@ function render(){
   try{if(ap&&typeof ae.selectionStart==="number"){ss=ae.selectionStart;se=ae.selectionEnd}}catch(e){}
   var wy=window.scrollY,ms=document.getElementById("mscroll"),mx=ms?ms.scrollLeft:0,my=ms?ms.scrollTop:0;
   renderInner();
+  document.body.classList.toggle("ro",READONLY);
+  if(READONLY)document.querySelectorAll("main [data-p],main [data-idfor]").forEach(function(el){if(el.tagName==="SELECT"||el.type==="checkbox")el.disabled=true;else el.readOnly=true});
   sizeAll();
   if(ap){var n=document.querySelector('[data-p="'+ap+'"]');if(n){n.focus({preventScroll:true});try{if(ss!=null)n.setSelectionRange(ss,se)}catch(e){}}}
   var ms2=document.getElementById("mscroll");if(ms&&ms2){ms2.scrollLeft=mx;ms2.scrollTop=my}
@@ -4350,12 +4587,16 @@ function vProcesses(){
 
 /* ---------- QUESTIONS ---------- */
 function vQuestions(){
+  var QF=[["all","All"],["open","Still open"],["olga","From Olga's prototype"]];
   var rows=state.questions.map(function(q,i){var b="questions."+i+".";
-    return '<tr><td style="width:70px"><input data-p="'+b+'id" value="'+esc(q.id)+'"></td><td><input data-p="'+b+'t" value="'+esc(q.t)+'"></td>'+
+    if(qfilt==="open"&&q.st!=="open")return "";
+    if(qfilt==="olga"&&q.src!=="olga")return "";
+    return '<tr><td style="width:70px"><input data-p="'+b+'id" value="'+esc(q.id)+'">'+(q.src==="olga"?'<div class="qsrc">Olga\'s prototype</div>':"")+'</td><td><textarea rows="2" data-p="'+b+'t">'+esc(q.t)+'</textarea></td>'+
       '<td style="width:160px">'+sel_(b+"p",q.p,PR)+'</td><td style="width:120px">'+sel_(b+"w",q.w,WH)+'</td>'+
       '<td style="width:32%"><textarea rows="2" data-p="'+b+'a" placeholder="answer">'+esc(q.a)+'</textarea></td><td style="width:115px">'+sel_(b+"st",q.st,QS)+'</td>'+
       '<td style="width:26px"><button class="ic" data-delq="'+i+'">×</button></td></tr>'}).join("");
-  return '<div class="card"><h2>Open questions</h2><p>Write the answer into the row and set the status. Priority A blocks matching the reference calculation, which is how the challenge is scored.</p>'+
+  return '<div class="card"><h2>Open questions</h2><p>Write the answer into the row and set the status. Priority A blocks matching the reference calculation, which is how the challenge is scored. Questions marked Olga\'s prototype came out of comparing her app with this model: there is no single right answer, so the team or Systasy decides.</p>'+
+    '<div class="filt" style="margin-bottom:10px">'+QF.map(function(f){return '<button class="sm'+(qfilt===f[0]?" on":"")+'" data-qfilt="'+f[0]+'">'+f[1]+'</button>'}).join("")+'</div>'+
     '<div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Question</th><th>Priority</th><th>Who answers</th><th>Answer</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div style="margin-top:10px"><button class="sm" data-add="question">+ question</button></div></div>';
 }
@@ -4378,14 +4619,11 @@ function vAbout(){
     '<div class="fld"><span class="lab">Open</span><input data-p="modules.'+i+'.open" value="'+esc(x.open)+'"></div>'+
     '<div class="fld"><span class="lab">What the team said</span><textarea rows="2" data-p="modules.'+i+'.c">'+esc(x.c)+'</textarea></div></div>'}).join("");
   return '<div class="card" style="margin-bottom:16px"><h2>What this file is</h2>'+
-    '<p>The single source of truth for the data model of the lab screen planning tool: every entity, its fields, how they connect, the processes and the open questions. Everything is stored inside this one HTML file.</p>'+
-    '<h3 style="margin-top:14px">Saving</h3><p>In Chrome or Edge, Save to file writes your changes back into this HTML file. The first time it asks where: pick this same workbench.html in the repository. After that it saves by itself a moment after every change, and Cmd or Ctrl + S works too. Then commit the file as usual.</p>'+
-    '<p>In Safari or Firefox, Download copy gives you an updated workbench.html. Replace the one in the repository with it.</p>'+
-    '<p>Until you save, your edits are kept in this browser as a draft. If the file changes underneath you, for example after a git pull, the draft is not applied over the newer file.</p>'+
-    '<h3 style="margin-top:14px">How to review</h3><p>Start on the Map to get the overall picture. Then go through Entities area by area, set a verdict on each card and write down what was said. Cards marked "please confirm" were changed on 22.11 and need a decision first. Check the Checks tab is clean before committing.</p>'+
+    '<p>The single source of truth for the data model of the lab screen planning tool: every entity, its fields, how they connect, the processes and the open questions.</p>'+
+    '<h3 style="margin-top:14px">Saving</h3><p>The model lives on the server. Every change is saved there automatically within a second, and everyone who has the page open sees the others\' changes within a few seconds. There is nothing to save or download. A copy opened from a file is read only.</p>'+
+    '<h3 style="margin-top:14px">How to review</h3><p>Start on the Map to get the overall picture. Then go through Entities area by area, set a verdict on each card and write down what was said. Cards marked "please confirm" were changed on 22.11 and need a decision first. Keep the Checks tab clean.</p>'+
     '<div class="row" style="margin-top:8px">'+ST.map(function(s){return '<span class="pill s-'+s[0]+'">'+s[1]+'</span>'}).join("")+'</div>'+
-    '<div class="row" style="margin-top:14px"><div class="fld" style="width:280px"><span class="lab">Who reviewed</span><input data-p="meta.reviewer" value="'+esc(state.meta.reviewer)+'"></div><div class="fld" style="width:160px"><span class="lab">Version</span><input data-p="meta.version" value="'+esc(state.meta.version)+'"></div></div>'+
-    '<p class="muted">Last saved '+esc(new Date(state.meta.rev).toLocaleString())+'</p></div>'+
+    '<div class="row" style="margin-top:14px"><div class="fld" style="width:280px"><span class="lab">Who reviewed</span><input data-p="meta.reviewer" value="'+esc(state.meta.reviewer)+'"></div><div class="fld" style="width:160px"><span class="lab">Version</span><input data-p="meta.version" value="'+esc(state.meta.version)+'"></div></div>'+'</div>'+
     '<h2 style="margin:0 0 10px">The parts of the system</h2><div class="cards">'+mm+'</div>';
 }
 
@@ -4394,7 +4632,7 @@ document.addEventListener("input",function(ev){
   var t=ev.target;
   if(t.id==="msearch"){query=t.value;applyHL();return}
   if(t.id==="esearch"){query=t.value;var pos=t.selectionStart;render();var n=document.getElementById("esearch");if(n){n.focus();n.setSelectionRange(pos,pos)}return}
-  var p=t.getAttribute("data-p");if(!p||t.type==="checkbox"||t.tagName==="SELECT")return;
+  var p=t.getAttribute("data-p");if(!p||READONLY||t.type==="checkbox"||t.tagName==="SELECT")return;
   if(t.tagName==="TEXTAREA")autosize(t);
   setPath(p,t.value);touch();
 });
@@ -4403,6 +4641,7 @@ document.addEventListener("change",function(ev){
   if(t.id==="mhl"){hlMode=t.value;applyHL();return}
   if(t.id==="focusSel"){focusId=t.value;render();return}
   if(t.id==="impfile"){importFile(t);return}
+  if(READONLY&&(t.hasAttribute("data-idfor")||t.hasAttribute("data-p")))return;
   if(t.hasAttribute("data-idfor")){renameId(+t.getAttribute("data-idfor"),t.value.trim());return}
   var p=t.getAttribute("data-p");if(!p)return;
   if(t.type==="checkbox"){setPath(p,t.checked);if(!t.checked){var k=p.split(".");delete state.entities[+k[1]].f[+k[3]].opt}touch();render();return}
@@ -4410,13 +4649,11 @@ document.addEventListener("change",function(ev){
   if(/\.t$/.test(p))setTimeout(function(){var a=document.activeElement;if(!a||!/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))render()},0);
 });
 document.addEventListener("click",function(ev){
-  var t=ev.target.closest("[data-tab],[data-act],[data-go],[data-edit],[data-focus],[data-desel],[data-zoom],[data-filt],[data-pfilt],[data-tog],[data-add],[data-addf],[data-addu],[data-delf],[data-dele],[data-delp],[data-delq],[data-bact],.mcard");
+  var t=ev.target.closest("[data-tab],[data-act],[data-go],[data-edit],[data-focus],[data-desel],[data-zoom],[data-filt],[data-pfilt],[data-qfilt],[data-tog],[data-add],[data-addf],[data-addu],[data-delf],[data-dele],[data-delp],[data-delq],[data-bact],.mcard");
   if(!t){if(ev.target.closest("#mscroll")&&sel){sel=null;applyHL();panel()}return}
   var d=t.dataset;
   if(t.classList.contains("mcard")){sel=t.getAttribute("data-id");hov=null;applyHL();panel();return}
   if(d.tab){tab=d.tab;if(tab!=="map")hov=null;render();if(tab==="map"&&zoom===1)fitZoom();return}
-  if(d.act==="save"){save(false);return}
-  if(d.act==="download"){download();return}
   if(d.act==="import"){document.getElementById("impfile").click();return}
   if(d.go){goEntity(d.go);return}
   if(d.edit){goEntity(d.edit,true);return}
@@ -4425,7 +4662,9 @@ document.addEventListener("click",function(ev){
   if(d.zoom){zoom=d.zoom==="fit"?zoom:Math.max(.35,Math.min(1.6,zoom*(d.zoom==="+"?1.15:1/1.15)));if(d.zoom==="fit")fitZoom();else applyZoom();return}
   if(d.filt){filt=d.filt;render();return}
   if(d.pfilt){pfilt=d.pfilt;render();return}
+  if(d.qfilt){qfilt=d.qfilt;render();return}
   if(d.tog){openF[d.tog]=!openF[d.tog];return}
+  if(READONLY&&(d.addf!=null||d.addu!=null||d.delf!=null||d.dele!=null||d.delp!=null||d.delq!=null||d.add||d.act==="import"))return;
   if(d.addf!=null){var e=state.entities[+d.addf];e.f.push({n:"",t:"text",s:"P",note:"",chg:"new"});openF[e.id]=true;touch();render();return}
   if(d.addu!=null){var e2=state.entities[+d.addu],nm=prompt("Name of the quantity, for example 'volume per well'");if(!nm)return;e2.f.push({n:nm,t:"decimal",s:"P",note:""},{n:nm+" unit",t:"ref MD-14",s:"P",note:""});openF[e2.id]=true;touch();render();return}
   if(d.delf!=null){var a=d.delf.split(".");state.entities[+a[0]].f.splice(+a[1],1);touch();render();return}
@@ -4437,12 +4676,7 @@ document.addEventListener("click",function(ev){
   if(d.add==="question"){state.questions.push({id:"Q-new",t:"",p:"B",w:"Expert",a:"",st:"open"});touch();render();return}
   if(d.bact){var bi=+d.ban,b=BANS[bi];
     if(d.bact==="close"){BANS.splice(bi,1);drawBanners();return}
-    if(d.bact==="restore"){try{state=JSON.parse(localStorage.getItem(DRAFT_KEY)).state}catch(e){}BANS.splice(bi,1);drawBanners();dirty=true;saveState();render();return}
-    if(d.bact==="discard"){try{localStorage.removeItem(DRAFT_KEY)}catch(e){}BANS.splice(bi,1);drawBanners();return}
-    if(d.bact==="dldraft"){var raw=localStorage.getItem(DRAFT_KEY)||"{}",bl=new Blob([raw],{type:"application/json"}),u=URL.createObjectURL(bl),an=document.createElement("a");an.href=u;an.download="workbench-draft.json";document.body.appendChild(an);an.click();an.remove();return}
-    if(d.bact==="mergeold"){var o=oldNotes(),n=o?mergeNotes(o):0;try{localStorage.setItem(OLD_DONE,"1")}catch(e){}BANS.splice(bi,1);banner("info","Merged "+n+" verdicts, comments and answers from the previous version. Save to keep them in the file.",[["OK","close"]],"merged");touch();render();return}
-    if(d.bact==="force"){forceSave();return}
-    if(d.bact==="reload"){location.reload();return}
+    if(d.bact==="dlold"){var raw=localStorage.getItem(OLD_KEY)||"{}",bl=new Blob([raw],{type:"application/json"}),u=URL.createObjectURL(bl),an=document.createElement("a");an.href=u;an.download="workbench-old-notes.json";document.body.appendChild(an);an.click();an.remove();setTimeout(function(){URL.revokeObjectURL(u)},3000);return}
   }
 });
 document.addEventListener("mouseover",function(ev){var c=ev.target.closest&&ev.target.closest(".mcard");var id=c?c.getAttribute("data-id"):null;if(id!==hov&&tab==="map"){hov=id;applyHL()}});
@@ -4463,7 +4697,7 @@ function renameId(i,nid){
 }
 function importFile(inp){
   var f=inp.files[0];if(!f)return;var r=new FileReader();
-  r.onload=function(){try{var o=JSON.parse(r.result);if(o&&o.state)o=o.state;var n=mergeNotes(o);banner("info","Merged "+n+" verdicts, comments and answers from "+esc(f.name)+". Save to keep them in the file.",[["OK","close"]],"merged");touch();render()}catch(e){alert("That file could not be read as JSON.")}};
+  r.onload=function(){try{var o=JSON.parse(r.result);if(o&&o.state)o=o.state;var n=mergeNotes(o);banner("info","Merged "+n+" verdicts, comments and answers from "+esc(f.name)+". They are saved to the server like any other change.",[["OK","close"]],"merged");touch();render()}catch(e){alert("That file could not be read as JSON.")}};
   r.readAsText(f);inp.value="";
 }
 window.addEventListener("resize",function(){if(tab==="map")applyZoom();else sizeAll()});

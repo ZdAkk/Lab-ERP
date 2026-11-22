@@ -18,7 +18,7 @@ There is no login here, so put Cloudflare Access in front of it.
 First start     data/model.json is created from the data inside workbench.html.
 New app code    replace workbench.html, reload the page. The live data stays.
 Start over      stop the container, delete data/model.json, start it again.
-Into the repo   "Download copy" in the page gives a complete workbench.html.
+Snapshot        data/model.json holds the whole model. Copy it somewhere to keep a version.
 Safety copies   data/history/ gets a copy of the model at most every 10 minutes.
 """
 import json, os, re, threading, time
