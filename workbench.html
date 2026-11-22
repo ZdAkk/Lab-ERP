@@ -118,7 +118,7 @@ main{padding:18px 20px 60px;max-width:1600px;margin:0 auto}
 /* entities */
 .secth{display:flex;align-items:baseline;gap:10px;font-size:14px;font-weight:600;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
 .secth span{font-weight:400;color:var(--tx3);font-size:12.5px}
-.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:14px}
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(440px,100%),1fr));gap:14px}
 .ecard{background:var(--sf);border:1px solid var(--bd);border-left:3px solid var(--abr);border-radius:12px;padding:14px 16px}
 .ecard.vok{box-shadow:inset -3px 0 0 var(--okbr)}.ecard.vchange{box-shadow:inset -3px 0 0 var(--wabr)}.ecard.vdrop{box-shadow:inset -3px 0 0 var(--erbr)}
 .egrid>.ecard:has(details[open]){grid-column:1 / -1}
@@ -149,12 +149,71 @@ tr.isunit td input{color:var(--tx3)}
 .iss a{color:var(--ac);cursor:pointer}
 .sev{font-size:11px;padding:1px 8px;border-radius:20px;text-align:center}
 .sev.error{background:var(--erbg);color:var(--er)}.sev.warn{background:var(--wabg);color:var(--wa)}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px}
 .steps{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
 @media (max-width:1100px){.mapgrid{grid-template-columns:1fr}.mappanel{position:static;max-height:none}}
 @media print{header,.tabs,#banner,button{display:none}}
 .qsrc{font-size:10px;color:var(--wa,#8a5a00);margin-top:3px;white-space:nowrap}
 body.ro [data-add],body.ro [data-addf],body.ro [data-addu],body.ro [data-delf],body.ro [data-dele],body.ro [data-delp],body.ro [data-delq],body.ro [data-act="import"]{display:none}
+/* layout helpers */
+.esearch{width:180px}
+#focusSel{width:300px;max-width:100%}
+.qwrap{overflow-x:auto}
+.pickrow{display:grid;grid-template-columns:repeat(2,minmax(0,230px));gap:10px;margin-bottom:12px}
+.pickrow select{width:100%}
+.olab{display:none}
+/* phones */
+@media (max-width:700px){
+header{position:static;padding:10px 12px;gap:6px 8px}
+#ttl{font-size:16px}
+#stats{flex-basis:100%;font-size:11.5px;line-height:1.5}
+.tabs{top:0;padding:0 6px}
+.tab{padding:10px 10px}
+main{padding:12px 10px 60px}
+.card{padding:14px 14px}
+.ecard{padding:12px 12px}
+input,select,textarea{font-size:16px}
+td input,td select{font-size:15px;padding:6px 8px}
+.esearch{width:100%}
+.ehead{flex-wrap:wrap!important}
+.ehead .ename{min-width:0;flex:1 1 0}
+.ehead select{flex:1 1 100%;width:100%!important}
+.secth{flex-wrap:wrap;gap:4px 8px}
+/* entity fields: one small block per field */
+table.ftab,table.ftab tbody{display:block}
+table.ftab thead{display:none}
+table.ftab tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 14px 30px;grid-template-areas:"n n dot del" "t s s s" "o o o o" "note note note note";gap:6px;padding:10px 0;border-bottom:1px solid var(--bd)}
+table.ftab tr:first-child{padding-top:2px}
+table.ftab td{display:block;width:auto!important;border:0;padding:0;text-align:left!important}
+.c-n{grid-area:n}.c-t{grid-area:t}.c-s{grid-area:s}.c-note{grid-area:note}.c-del{grid-area:del;justify-self:end}
+.c-dot{grid-area:dot;align-self:center}
+.c-o{grid-area:o}.c-o:not(.has){display:none!important}
+.c-o label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx2)}
+.olab{display:inline}
+.c-n input{font-weight:500}
+/* connections */
+.radwrap{overflow-x:auto;margin:0 -4px}
+.radwrap svg{min-width:600px}
+#focusSel{width:100%}
+.rlist .ri{grid-template-columns:auto minmax(0,1fr);gap:8px;padding:10px 0}
+.rlist .ri .sent{grid-column:1 / -1}
+.rlist .ri .cm{grid-template-columns:1fr}
+/* processes */
+.pickrow{grid-template-columns:1fr 1fr}
+/* questions: one block per question */
+.qwrap{overflow:visible}
+table.qtab,table.qtab tbody{display:block}
+table.qtab thead{display:none}
+table.qtab tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 30px;grid-template-areas:"id st del" "t t t" "p w w" "a a a";gap:8px 6px;padding:14px 0;border-bottom:1px solid var(--bd)}
+table.qtab td{display:block;width:auto!important;border:0;padding:0}
+.q-id{grid-area:id;display:flex!important;align-items:center;gap:10px}.q-id input{width:96px}.q-id .qsrc{margin:0}
+.q-t{grid-area:t}.q-p{grid-area:p}.q-w{grid-area:w}.q-st{grid-area:st}.q-a{grid-area:a}.q-del{grid-area:del;justify-self:end}
+table.qtab td[data-l]:before{content:attr(data-l);display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--tx3);font-weight:600;margin-bottom:3px}
+table.qtab select{width:100%}
+/* checks */
+.iss{grid-template-columns:64px minmax(0,1fr);gap:4px 10px}
+.iss>span:last-child{grid-column:1 / -1}
+}
 </style>
 </head>
 <body>
@@ -4332,6 +4391,7 @@ function render(){
   if(ap){var n=document.querySelector('[data-p="'+ap+'"]');if(n){n.focus({preventScroll:true});try{if(ss!=null)n.setSelectionRange(ss,se)}catch(e){}}}
   var ms2=document.getElementById("mscroll");if(ms&&ms2){ms2.scrollLeft=mx;ms2.scrollTop=my}
   window.scrollTo(0,wy);
+  var rw=document.querySelector(".radwrap");if(rw&&rw.scrollWidth>rw.clientWidth)rw.scrollLeft=(rw.scrollWidth-rw.clientWidth)/2;
 }
 function autosize(el){el.style.height="auto";el.style.height=(el.scrollHeight+2)+"px"}
 function sizeAll(){document.querySelectorAll("main textarea").forEach(autosize)}
@@ -4482,7 +4542,7 @@ function vEntities(){
   var fc=[["all","All"],["confirm","Please confirm"],["todo","Not reviewed"],["change","Needs change"]];
   var head='<div class="card" style="margin-bottom:6px"><h2>Everything the system stores</h2><p>Each card is one kind of thing. Read what it is and what it is for, set a verdict, write down what the team says. The fields are under each card for when you need them. A field that points at another entity is what creates a connection on the map.</p>'+
     '<div class="row" style="justify-content:space-between"><div class="row">'+ST.map(function(s){return '<span class="pill s-'+s[0]+'">'+s[1]+'</span>'}).join("")+'</div>'+
-    '<div class="row"><input id="esearch" placeholder="Find" style="width:180px" value="'+esc(query)+'"><div class="filt">'+fc.map(function(f){return '<button class="sm'+(filt===f[0]?" on":"")+'" data-filt="'+f[0]+'">'+f[1]+'</button>'}).join("")+'</div></div></div></div>';
+    '<div class="row"><input id="esearch" placeholder="Find" class="esearch" value="'+esc(query)+'"><div class="filt">'+fc.map(function(f){return '<button class="sm'+(filt===f[0]?" on":"")+'" data-filt="'+f[0]+'">'+f[1]+'</button>'}).join("")+'</div></div></div></div>';
   var areas=state.areas.concat(state.entities.some(function(e){return !area(e.area)})?[{id:"_u",n:"Unsorted",hint:"",color:"gray"}]:[]);
   var body=areas.map(function(a){
     var list=state.entities.map(function(e,i){return {e:e,i:i}}).filter(function(x){return (a.id==="_u"?!area(x.e.area):x.e.area===a.id)});
@@ -4502,24 +4562,25 @@ function ecard(e,i){
   var b="entities."+i+".",unk=e.f.filter(function(f){return f.s==="O"}).length;
   var rows=e.f.map(function(f,j){
     var fb=b+"f."+j+".",p=parseT(f.t),isU=f.t==="ref MD-14";
-    return '<tr class="'+(p&&!isU?"isref":"")+(isU?" isunit":"")+'"><td style="width:27%"><input data-p="'+fb+'n" value="'+esc(f.n)+'">'+'</td>'+
-      '<td style="width:17%"><input data-p="'+fb+'t" value="'+esc(f.t)+'" list="typelist"></td>'+
-      '<td style="width:13%">'+sel_(fb+"s",f.s,ST)+'</td>'+
-      '<td style="width:44px;text-align:center">'+(p&&p.k==="ref"&&!isU?'<input type="checkbox" data-p="'+fb+'opt"'+(f.opt?" checked":"")+' title="optional: may be empty">':"")+'</td>'+
-      '<td><input data-p="'+fb+'note" value="'+esc(f.note)+'"></td>'+
-      '<td style="width:20px">'+(f.chg?'<span class="dot" title="'+esc(f.chg)+'"></span>':"")+'</td>'+
-      '<td style="width:26px"><button class="ic" data-delf="'+i+"."+j+'" title="Remove field">×</button></td></tr>';
+    var hasO=p&&p.k==="ref"&&!isU;
+    return '<tr class="'+(p&&!isU?"isref":"")+(isU?" isunit":"")+'"><td class="c-n" style="width:27%"><input data-p="'+fb+'n" value="'+esc(f.n)+'" placeholder="field name">'+'</td>'+
+      '<td class="c-t" style="width:17%"><input data-p="'+fb+'t" value="'+esc(f.t)+'" list="typelist"></td>'+
+      '<td class="c-s" style="width:13%">'+sel_(fb+"s",f.s,ST)+'</td>'+
+      '<td class="c-o'+(hasO?" has":"")+'" style="width:44px;text-align:center">'+(hasO?'<label><input type="checkbox" data-p="'+fb+'opt"'+(f.opt?" checked":"")+' title="optional: may be empty"><span class="olab">optional</span></label>':"")+'</td>'+
+      '<td class="c-note"><input data-p="'+fb+'note" value="'+esc(f.note)+'" placeholder="note"></td>'+
+      '<td class="c-dot" style="width:20px">'+(f.chg?'<span class="dot" title="'+esc(f.chg)+'"></span>':"")+'</td>'+
+      '<td class="c-del" style="width:26px"><button class="ic" data-delf="'+i+"."+j+'" title="Remove field">×</button></td></tr>';
   }).join("");
   var rc=rels().filter(function(r){return r.a===e.id||r.b===e.id}).length;
   return '<div class="ecard '+acls(e)+(e.v?" v"+e.v:"")+'" id="ent-'+esc(e.id)+'">'+
-    '<div class="row" style="gap:6px;flex-wrap:nowrap"><input class="idtag" data-idfor="'+i+'" value="'+esc(e.id)+'" title="Short id. Renaming updates every reference">'+
+    '<div class="row ehead" style="gap:6px;flex-wrap:nowrap"><input class="idtag" data-idfor="'+i+'" value="'+esc(e.id)+'" title="Short id. Renaming updates every reference">'+
     '<input class="ename" data-p="'+b+'n" value="'+esc(e.n)+'">'+sel_(b+"v",e.v,VD,' style="width:auto"')+'</div>'+
     (e.chg?'<div class="chgnote'+(e.ck==="tidy"?" tidy":"")+'"><b>'+(e.ck==="tidy"?"Tidied 22.11":"Changed 22.11, please confirm")+':</b> '+esc(e.chg)+'</div>':"")+
     '<div class="fld" style="margin-top:8px"><span class="lab">What it is</span><textarea rows="2" data-p="'+b+'d">'+esc(e.d)+'</textarea></div>'+
     '<div class="fld"><span class="lab">What it is for</span><textarea rows="2" data-p="'+b+'w">'+esc(e.w||"")+'</textarea></div>'+
     '<div class="fld"><span class="lab">What the team said</span><textarea rows="2" data-p="'+b+'c" placeholder="Missing? Wrong name? Not needed?">'+esc(e.c)+'</textarea></div>'+
     '<details'+(openF[e.id]?" open":"")+'><summary data-tog="'+esc(e.id)+'">Fields: '+e.f.length+(unk?", "+unk+" still unknown":"")+", "+rc+" connections</summary>"+
-    '<table style="margin-top:8px"><thead><tr><th>Field</th><th>Type</th><th>Status</th><th title="optional reference">Opt.</th><th>Note</th><th></th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<table class="ftab" style="margin-top:8px"><thead><tr><th>Field</th><th>Type</th><th>Status</th><th title="optional reference">Opt.</th><th>Note</th><th></th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
     '<div class="row" style="margin-top:8px;justify-content:space-between"><div class="row"><button class="sm" data-addf="'+i+'">+ field</button><button class="sm" data-addu="'+i+'" title="Add a field and its unit">+ quantity with unit</button></div>'+
     '<div class="row"><span class="muted">Area</span>'+sel_(b+"area",e.area,state.areas.map(function(a){return [a.id,a.n]}),' style="width:auto"')+'<button class="ic" data-dele="'+i+'" title="Delete entity">×</button></div></div></details></div>';
 }
@@ -4550,8 +4611,8 @@ function radial(){
    '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" style="font-size:10.5px" fill="var(--tx3)">'+esc(f.id)+'</text>'+
    '<text x="'+cx+'" y="'+(cy+12)+'" text-anchor="middle" style="font-size:14.5px;font-weight:600" fill="var(--tx)">'+esc(trunc(f.n,24))+'</text></svg>';
   var opts=state.entities.map(function(e){var c=rels().filter(function(r){return r.a===e.id||r.b===e.id}).length;return '<option value="'+esc(e.id)+'"'+(e.id===focusId?" selected":"")+'>'+esc(e.id)+"  "+esc(e.n)+"  ("+c+")</option>"}).join("");
-  return '<div class="card" style="margin-bottom:14px"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">One entity and its neighbours</h2><span class="row" style="gap:8px"><span class="muted">Centre on</span><select id="focusSel" style="width:300px">'+opts+'</select></span></div>'+
-    '<p style="margin-bottom:4px">Click a surrounding box to move onto it. Arrows point from the one that holds the reference to the one it refers to. A dashed line may be empty.</p>'+svg+'</div>';
+  return '<div class="card" style="margin-bottom:14px"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">One entity and its neighbours</h2><span class="row" style="gap:8px"><span class="muted">Centre on</span><select id="focusSel">'+opts+'</select></span></div>'+
+    '<p style="margin-bottom:4px">Click a surrounding box to move onto it. Arrows point from the one that holds the reference to the one it refers to. A dashed line may be empty.</p><div class="radwrap">'+svg+'</div></div>';
 }
 function vConnections(){
   var R=rels(),groups={};
@@ -4573,7 +4634,7 @@ function vProcesses(){
     var b="processes."+i+".";
     return '<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px;flex-wrap:nowrap"><div class="row" style="flex-wrap:nowrap;flex:1"><input class="idtag" data-p="'+b+'id" value="'+esc(p.id)+'">'+
       '<input class="ename" data-p="'+b+'n" value="'+esc(p.n)+'"></div><button class="ic" data-delp="'+i+'">×</button></div>'+
-      '<div class="row" style="margin-bottom:10px"><span class="muted">For the prototype</span>'+sel_(b+"prio",p.prio||"",PP,' style="width:auto"')+'<span class="muted">Verdict</span>'+sel_(b+"v",p.v,VD,' style="width:auto"')+'</div>'+
+      '<div class="pickrow"><label><span class="lab">For the prototype</span>'+sel_(b+"prio",p.prio||"",PP)+'</label><label><span class="lab">Verdict</span>'+sel_(b+"v",p.v,VD)+'</label></div>'+
       '<div class="fld"><span class="lab">Trigger</span><input data-p="'+b+'o" value="'+esc(p.o)+'"></div>'+
       '<div class="fld"><span class="lab">Steps, one per line</span><textarea class="steps" rows="'+Math.max(4,(p.steps||"").split("\n").length+1)+'" data-p="'+b+'steps">'+esc(p.steps)+'</textarea></div>'+
       '<div class="fld"><span class="lab">Result</span><input data-p="'+b+'out" value="'+esc(p.out)+'"></div>'+
@@ -4591,13 +4652,13 @@ function vQuestions(){
   var rows=state.questions.map(function(q,i){var b="questions."+i+".";
     if(qfilt==="open"&&q.st!=="open")return "";
     if(qfilt==="olga"&&q.src!=="olga")return "";
-    return '<tr><td style="width:70px"><input data-p="'+b+'id" value="'+esc(q.id)+'">'+(q.src==="olga"?'<div class="qsrc">Olga\'s prototype</div>':"")+'</td><td><textarea rows="2" data-p="'+b+'t">'+esc(q.t)+'</textarea></td>'+
-      '<td style="width:160px">'+sel_(b+"p",q.p,PR)+'</td><td style="width:120px">'+sel_(b+"w",q.w,WH)+'</td>'+
-      '<td style="width:32%"><textarea rows="2" data-p="'+b+'a" placeholder="answer">'+esc(q.a)+'</textarea></td><td style="width:115px">'+sel_(b+"st",q.st,QS)+'</td>'+
-      '<td style="width:26px"><button class="ic" data-delq="'+i+'">×</button></td></tr>'}).join("");
+    return '<tr><td class="q-id" style="width:70px"><input data-p="'+b+'id" value="'+esc(q.id)+'">'+(q.src==="olga"?'<div class="qsrc">Olga\'s prototype</div>':"")+'</td><td class="q-t"><textarea rows="2" data-p="'+b+'t">'+esc(q.t)+'</textarea></td>'+
+      '<td class="q-p" data-l="Priority" style="width:160px">'+sel_(b+"p",q.p,PR)+'</td><td class="q-w" data-l="Who answers" style="width:120px">'+sel_(b+"w",q.w,WH)+'</td>'+
+      '<td class="q-a" style="width:32%"><textarea rows="2" data-p="'+b+'a" placeholder="answer">'+esc(q.a)+'</textarea></td><td class="q-st" style="width:115px">'+sel_(b+"st",q.st,QS)+'</td>'+
+      '<td class="q-del" style="width:26px"><button class="ic" data-delq="'+i+'">×</button></td></tr>'}).join("");
   return '<div class="card"><h2>Open questions</h2><p>Write the answer into the row and set the status. Priority A blocks matching the reference calculation, which is how the challenge is scored. Questions marked Olga\'s prototype came out of comparing her app with this model: there is no single right answer, so the team or Systasy decides.</p>'+
     '<div class="filt" style="margin-bottom:10px">'+QF.map(function(f){return '<button class="sm'+(qfilt===f[0]?" on":"")+'" data-qfilt="'+f[0]+'">'+f[1]+'</button>'}).join("")+'</div>'+
-    '<div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Question</th><th>Priority</th><th>Who answers</th><th>Answer</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="qwrap"><table class="qtab"><thead><tr><th>ID</th><th>Question</th><th>Priority</th><th>Who answers</th><th>Answer</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div style="margin-top:10px"><button class="sm" data-add="question">+ question</button></div></div>';
 }
 
