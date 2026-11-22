@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab ERP — model workbench</title>
+<style>
+:root{--bg:#faf9f7;--sf:#fff;--sf2:#f3f1ec;--tx:#22211f;--tx2:#5f5e5a;--tx3:#8b8a84;--bd:#e3e0d9;--bd2:#c9c6bd;
+--ac:#534ab7;--acbg:#eeedfe;--acbr:#7f77dd;--te:#0f6e56;--tebg:#e1f5ee;--tebr:#1d9e75;
+--co:#993c1d;--cobg:#faece7;--cobr:#d85a30;--am:#854f0b;--ambg:#faeeda;--ambr:#ba7517;--r:8px}
+@media (prefers-color-scheme:dark){:root{--bg:#1a1a18;--sf:#232321;--sf2:#2b2b28;--tx:#eceae4;--tx2:#a8a69e;--tx3:#7b7a74;--bd:#38372f;--bd2:#4b4a42;
+--ac:#afa9ec;--acbg:#3c3489;--acbr:#7f77dd;--te:#9fe1cb;--tebg:#085041;--tebr:#1d9e75;
+--co:#f0997b;--cobg:#712b13;--cobr:#d85a30;--am:#fac775;--ambg:#633806;--ambr:#ba7517}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1{font-size:19px;font-weight:600;margin:0}
+h2{font-size:17px;font-weight:600;margin:0 0 4px}
+h3{font-size:14px;font-weight:600;margin:0 0 6px;color:var(--tx2)}
+p{margin:0 0 10px;color:var(--tx2);font-size:14px}
+a{color:var(--ac)}
+input,select,textarea,button{font:inherit;color:var(--tx)}
+input,select,textarea{background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:13.5px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acbr);outline-offset:-1px;border-color:transparent}
+textarea{resize:vertical;line-height:1.6}
+button{background:transparent;border:1px solid var(--bd2);border-radius:var(--r);padding:6px 12px;font-size:13.5px;cursor:pointer}
+button:hover{background:var(--sf2)}
+button.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+button.pri:hover{opacity:.9}
+button.sm{padding:3px 8px;font-size:12px}
+button.ic{padding:3px 7px;color:var(--tx3);border-color:transparent}
+button.ic:hover{color:var(--co);border-color:var(--bd)}
+header{background:var(--sf);border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+.stat{font-size:12.5px;color:var(--tx3)}
+.stat b{color:var(--tx);font-weight:600}
+#saved{font-size:12.5px;color:var(--te)}
+.tabs{display:flex;gap:4px;padding:0 20px;background:var(--sf);border-bottom:1px solid var(--bd);position:sticky;top:53px;z-index:19;overflow-x:auto}
+.tab{padding:9px 14px;font-size:13.5px;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--tx)}
+.tab.on{color:var(--ac);border-bottom-color:var(--acbr);font-weight:600}
+main{padding:20px;max-width:1500px;margin:0 auto}
+.split{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px;align-items:start}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:16px 18px}
+.list{background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;position:sticky;top:104px;max-height:calc(100vh - 130px);overflow-y:auto}
+.grp{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);padding:10px 12px 5px;background:var(--sf2)}
+.it{padding:7px 12px;cursor:pointer;border-top:1px solid var(--bd);display:flex;gap:8px;align-items:center;font-size:13.5px}
+.it:hover{background:var(--sf2)}
+.it.on{background:var(--acbg);color:var(--ac);font-weight:600}
+.it .eid{font-size:11.5px;color:var(--tx3);font-variant-numeric:tabular-nums;min-width:40px}
+.it.on .eid{color:var(--ac)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--tx3);font-weight:600;padding:0 6px 6px 0;border-bottom:1px solid var(--bd)}
+td{padding:4px 6px 4px 0;border-bottom:1px solid var(--bd);vertical-align:top}
+.pill{font-size:11px;padding:2px 7px;border-radius:20px;border:1px solid;white-space:nowrap;display:inline-block}
+.s-B{background:var(--tebg);border-color:var(--tebr);color:var(--te)}
+.s-P{background:var(--acbg);border-color:var(--acbr);color:var(--ac)}
+.s-O{background:var(--ambg);border-color:var(--ambr);color:var(--am)}
+.s-C{background:var(--sf2);border-color:var(--bd2);color:var(--tx2)}
+.v-ok{background:var(--tebg);border-color:var(--tebr);color:var(--te)}
+.v-change{background:var(--ambg);border-color:var(--ambr);color:var(--am)}
+.v-drop{background:var(--cobg);border-color:var(--cobr);color:var(--co)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--tx3);font-weight:600;margin-bottom:4px;display:block}
+.fld{margin-bottom:12px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--tx2);align-items:center}
+.note{background:var(--sf2);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--tx2)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+.muted{color:var(--tx3);font-size:12.5px}
+.steps{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+details{margin-top:10px;border-top:1px solid var(--bd);padding-top:8px}
+summary{cursor:pointer;font-size:12.5px;color:var(--tx3);list-style:none;display:flex;align-items:center;gap:6px}
+summary::-webkit-details-marker{display:none}
+summary:before{content:"\25B8";font-size:10px;display:inline-block;transition:transform .15s}
+details[open] summary:before{transform:rotate(90deg)}
+summary:hover{color:var(--ac)}
+.ecard{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px 16px}
+.ecard.rv-ok{border-left:3px solid var(--tebr)}
+.ecard.rv-change{border-left:3px solid var(--ambr)}
+.ecard.rv-drop{border-left:3px solid var(--cobr)}
+.egrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
+.secth{font-size:13px;font-weight:600;color:var(--tx2);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.secth span{font-weight:400;color:var(--tx3)}
+.filt{display:flex;gap:6px}
+.filt button.on{background:var(--acbg);border-color:var(--acbr);color:var(--ac)}
+.idtag{width:62px;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--tx3);background:var(--sf2);border-color:transparent;text-align:center;padding:4px 2px;flex:none}
+.idtag:focus{background:var(--sf);border-color:transparent}
+@media print{header,.tabs,button{display:none}details>*{display:block}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Lab ERP model workbench</h1>
+<span class="stat" id="stats"></span>
+<span id="saved"></span>
+<span style="margin-left:auto"></span>
+<button onclick="exportJSON()">Export JSON</button>
+<button onclick="exportMD()">Export Markdown</button>
+<button onclick="document.getElementById('imp').click()">Import JSON</button>
+<input type="file" id="imp" accept=".json" style="display:none" onchange="importJSON(this)">
+<button onclick="resetAll()">Reset</button>
+</header>
+
+<div class="tabs" id="tabs"></div>
+<main id="main"></main>
+
+<script>
+var SEED={
+meta:{title:"Lab screen planning ERP",version:"0.1",date:"2026-11-21",reviewer:""},
+modules:[
+{id:"M1",n:"Stammdaten",p:"Cell lines, cell types, protocols, recipes, materials, suppliers, plate formats, substances, readouts, devices, units, rates, calendar, settings.",reuse:"Standard ERP master data screens plus cleanup workspace",open:"Protocol and recipe editing is entirely new",v:"",c:""},
+{id:"M2",n:"Projects and planning",p:"Screen request form, calculation run, plates and batches, task schedule, conflicts.",reuse:"Nothing, this is the new core",open:"Depends on Q-PL01 and Q-K03",v:"",c:""},
+{id:"M3",n:"Media and preparations",p:"Recipe sheets, preparation plan, expiry tracking, lot picking at the bench.",reuse:"Nothing",open:"Shelf life and grouping rules Q-R04, Q-R05",v:"",c:""},
+{id:"M4",n:"Warehouse",p:"Lots with expiry, physical and incoming stock, reservations, movements, manual adjustments.",reuse:"Standard ERP warehouse almost unchanged, add expiry and opened date",open:"Q-M02, Q-M05",v:"",c:""},
+{id:"M5",n:"Purchasing",p:"Order list from net requirements, purchase orders, confirmation, shipment, goods receipt.",reuse:"Standard ERP purchasing unchanged",open:"Lead times and pack rules Q-M04",v:"",c:""},
+{id:"M6",n:"Devices and calendar",p:"Device list, capacity, bookings per task, incubator space over the whole run.",reuse:"Nothing",open:"Q-D01, Q-D02, Q-D03",v:"",c:""},
+{id:"M7",n:"Costing and quotes",p:"Cost lines per plate, batch and project, quote document, validity, payment terms.",reuse:"Standard ERP sales offer and payment terms",open:"Q-K01, Q-K02, Q-K05",v:"",c:""},
+{id:"M8",n:"Audit and trace",p:"Who changed what, plus a calculation trace so every number can be traced to its formula.",reuse:"Standard ERP audit protocol",open:"Trace granularity depends on Q-G03",v:"",c:""}],
+entities:[
+{id:"MD-01",g:"Master data",n:"Cell line",d:"The starting iPSC material. Patient derived or healthy donor.",v:"",c:"",f:[
+"code|text|P|Internal line name","donor_type|enum|B|patient, healthy, other","disease or indication|text|B|Website lists depression, Alzheimer, schizophrenia, bipolar, autism, stroke, neuropathic pain","genotype or modification|text|O|Q-C03, reporter or edited lines","source|enum|O|Q-C02, own, purchased, partner","passage limits|int|O|Q-C03","cryo vials available|ref stock|O|Q-C01, are frozen vials tracked as stock","active|bool|P|"]},
+{id:"MD-02",g:"Master data",n:"Cell type",d:"The differentiated target cell. Excitatory, inhibitory, sensory neurons or oligodendrocytes.",v:"",c:"",f:[
+"name|text|B|","default protocol|ref MD-03|P|Q-C04, one protocol per cell type","allowed plate formats|list ref MD-09|O|Q-L01","2D or 3D|enum|B|Website names both","seeding density per format|qty per well|O|Q-C02, may belong on the seeding step","co-culture partners|list|O|Not mentioned in the brief"]},
+{id:"MD-03",g:"Master data",n:"Protocol",d:"The reusable plan of a differentiation and screening run. The time based bill of materials.",v:"",c:"",f:[
+"name|text|P|","version|int|P|Q-P06, running projects keep their version","cell types|ref MD-02|P|Q-C04","kind|enum|P|Q-C01, expansion, differentiation, screening, combined","day zero definition|text|O|Q-P01, what counts as day 0","phases|list MD-04|P|Ordered","allowed plate formats|list|O|Q-L01","allowed readouts|list|O|Q-O01","status|enum|P|draft, active, retired"]},
+{id:"MD-04",g:"Master data",n:"Protocol phase",d:"A time segment with one media regime. Recipes are calculated per phase.",v:"",c:"",f:[
+"sequence|int|P|","name|text|P|As in the sample protocol","start day|int|P|Q-P01","end day|int|P|Q-P01","duration variability|min and max days|O|Q-P04","feeding regime|ref MD-05|P|Q-P02, frequency and exchange fraction","working volume per well|volume|O|Q-L01, does it change by phase","vessel|ref MD-09|O|Q-P03, flasks before replating into plates","quality gate at end|text|O|Job ad mentions monitoring differentiation quality"]},
+{id:"MD-05",g:"Master data",n:"Protocol step",d:"An action on given protocol days. Generates tasks, device demand, consumption and labour.",v:"",c:"",f:[
+"step type|enum|P|Q-P03, coating, seeding, feeding, replating, transduction, treatment, lysis, imaging, readout","day pattern|explicit days or every n days|P|Q-P02","time window|days earlier or later|O|Q-P04, decides how conflicts resolve","exchange fraction|decimal|O|Q-P02, full or partial media change","volume basis|enum|O|Q-L01","uses recipe|bool|P|Feeding uses the phase recipe","step materials|list material, qty, basis|P|Q-M03","devices|list type, duration, basis|P|Q-D02","hands-on time|duration|O|Q-P05","external service|ref|O|Q-O02","depends on|ref step, min and max gap|P|Scheduling precedence"]},
+{id:"MD-06",g:"Master data",n:"Media recipe",d:"Composition of one complete medium. Dozens exist per phase, plate format and cell type.",v:"",c:"",f:[
+"name or code|text|P|As named in the sample protocol","version|int|P|","base medium|ref MD-07|P|Q-R07, fill to volume semantics","shelf life after preparation|duration|B|Q-R04, value unknown","storage condition|enum|O|Q-R04","standard prep sizes|list of volumes|O|Q-R05","applies to|phase, cell type, plate format|B|Q-R01, does format change composition"]},
+{id:"MD-06C",g:"Master data",n:"Recipe component",d:"One additive line of a recipe. This is where the dilution arithmetic lives.",v:"",c:"",f:[
+"material|ref MD-07|B|","spec type|enum|P|Q-R02, final concentration, dilution 1:x, ratio 50x, percent, mass per volume, fill to volume","spec value and unit|decimal|O|Q-R02","stock concentration|decimal|O|Q-R02, needed for the dilution","add timing|enum|P|Q-R03, into the bottle or fresh at use","own shelf life after thaw|duration|O|Q-R04","sequence|int|P|For the printed recipe sheet"]},
+{id:"MD-07",g:"Master data",n:"Material",d:"Everything consumed and bought. Extends the standard ERP material.",v:"",c:"",f:[
+"material number|text|C|standard ERP","description|text|C|standard ERP","category|enum|P|Q-M01, base medium, supplement, growth factor, small molecule, coating, plate, tip","base unit|ref MD-14|C|standard ERP","pack size and unit|decimal|C|standard ERP","price per pack|money|B|Sample data has material prices","stock concentration|decimal|O|Q-R02","storage condition|enum|O|","shelf life after opening or thaw|duration|O|Q-R04","aliquot size|decimal|O|Q-R04, sets consumption granularity","counted as consumable|bool|P|Q-M03","safety stock|decimal|O|Q-M04"]},
+{id:"MD-08",g:"Master data",n:"Supplier article",d:"Material times supplier. standard ERP keeps price on the order line, quoting needs a standing price.",v:"",c:"",f:[
+"material|ref MD-07|P|","supplier|ref MD-08S|P|","supplier catalog number|text|P|","pack size and unit|decimal|P|May differ from the material default","price per pack and currency|money|B|","price valid from and to|date|O|Q-K04","minimum order quantity|int packs|O|Q-M04","lead time|days|O|Q-M04, drives the order-by date","preferred|bool|P|Engine picks the preferred article"]},
+{id:"MD-08S",g:"Master data",n:"Supplier",d:"Reused from standard ERP unchanged.",v:"",c:"",f:[
+"name|text|C|","address|text|C|","language|enum|C|","email|text|C|","payment term|ref|C|","default incoterms|enum|C|"]},
+{id:"MD-09",g:"Master data",n:"Plate format",d:"Defines wells and volumes so everything can scale per well. 96 and 384 are named by Systasy.",v:"",c:"",f:[
+"name|text|B|96-well, 384-well","total wells|int|P|","usable wells|int or rule|O|Q-L02, are edge wells excluded","working volume per well|volume|O|Q-L01","surface area per well|area|O|Only if coating scales by area","the plate as consumable|ref MD-07|P|Q-M03","coating required|bool|O|Q-P03","other vessels|flask, 6-well|O|Q-C01, only if expansion is in scope"]},
+{id:"MD-10",g:"Master data",n:"Substance",d:"The compounds being screened.",v:"",c:"",f:[
+"name or code|text|B|","source|enum|O|Q-S01, customer provided, purchased, internal library","stock concentration|decimal|O|Q-S02","solvent or vehicle|text or ref|O|Q-S02, usually DMSO","max solvent fraction per well|decimal|O|Q-S02","linked material|ref MD-07|P|If stocked and costed","molecular weight|decimal|O|Only for mass to molar conversion"]},
+{id:"MD-11",g:"Master data",n:"Readout",d:"The measurement at the end. pathwayPROFILER, targetFinder, single cell RNA sequencing.",v:"",c:"",f:[
+"name|text|B|","sample level|enum|O|Q-O03, per well, pooled, per plate","added steps|list with day offsets|P|Q-O02, sensor delivery, lysis, extraction","materials|list|P|Q-O02","devices|list|P|Q-D02","external service and price per sample|obj|O|Q-O02, in-house or external sequencing","time to data|days|O|Q-PL01, needed for backward planning","compatible plate formats|list|B|96 and 384 for pathwayPROFILER"]},
+{id:"MD-12",g:"Master data",n:"Device",d:"Bookable equipment. The sample data contains a device list.",v:"",c:"",f:[
+"name|text|B|","device type|enum|P|Steps reference types, engine assigns a concrete device","capacity model|enum|P|Q-D01, exclusive time, parallel slots, space in plates","capacity value|int|O|Q-D01","booking granularity|minutes|O|Q-D01","availability calendar|ref MD-16|P|","hourly cost rate|money|O|Q-K01","location|text|P|","external calendar id|text|O|Q-D03"]},
+{id:"MD-13",g:"Master data",n:"Customer",d:"Pharma and biotech partners. Reused from standard ERP.",v:"",c:"",f:[
+"name, language, email|text|C|standard ERP","billing and shipping address|obj|C|standard ERP","payment terms|ref|C|standard ERP","price list or discount|ref|O|Q-K04","internal project flag|bool|P|Internal screens without a quote"]},
+{id:"MD-14",g:"Master data",n:"Unit",d:"Conversions. Errors here break the reference match directly.",v:"",c:"",f:[
+"unit code|text|P|mL, uL, mg, ug, mM, uM, ng per mL, percent, x","dimension|enum|P|volume, mass, concentration, ratio, count, activity","factor to base unit|decimal|P|Standard SI factors","internal base|text|P|Volume in uL, mass in ug, money in cents"]},
+{id:"MD-15",g:"Master data",n:"Cost rate",d:"Everything besides material price. Which of these the reference uses is unknown.",v:"",c:"",f:[
+"labour rate|per hour|O|Q-K01","device rate|per hour or plate-day|O|Q-K01","external service price|per sample|O|Q-O02","overhead|percent or fixed|O|Q-K01","margin|percent|O|Quote only","risk buffer|percent or extra plates|O|","currency and VAT|enum|O|Q-K04","valid from and to|date|P|"]},
+{id:"MD-16",g:"Master data",n:"Calendar and staff",d:"Maps protocol days to calendar dates and finds weekend conflicts.",v:"",c:"",f:[
+"working weekdays|list|O|Q-W01","public holidays|list|P|Bavaria, lab is in Planegg-Martinsried","lab closure periods|list|O|","weekend rule per step type|rule|O|Q-W01, feeding maybe, readout probably not","staff, hours, skills, absences|list|O|Q-W02, only if capacity is modelled"]},
+{id:"MD-17",g:"Master data",n:"Calculation settings",d:"Engine parameters, configurable so the engine can be aligned to the reference without code changes.",v:"",c:"",f:[
+"overage on media volume|percent or absolute|O|Q-R06","dead volume per plate or reservoir|volume|O|Q-R06","rounding of component amounts|decimals or step|O|Q-G03","rounding of prep volumes|rule|O|Q-R05","prep grouping strategy|enum|O|Q-R05","pack rounding|enum|O|Q-M04","charge opened pack remainder|bool|O|Q-K02","spare plates|int or percent|O|Q-L04","stock allocation rule|FEFO or FIFO|O|Q-M02","consider other projects reservations|bool|O|Q-M05","weekend handling|warn, shift earlier, shift later|O|Q-W01","currency|enum|O|Q-K04"]},
+{id:"TD-01",g:"Transactions",n:"Screen project",d:"One customer or internal screen. Holds the request and links everything generated from it.",v:"",c:"",f:[
+"project number|text|P|","status|enum|P|draft, calculated, quoted, accepted, released, running, completed","customer and snapshot|ref MD-13|P|","request parameters|obj|B|All input form fields as entered","conditions|list substance, concentration, timepoint|P|Q-L03","replicates|int|B|Q-L03, at which level","controls|config|O|Q-L02","desired date and mode|date, enum|B|Q-PL01","protocol snapshot|frozen version|P|Taken at acceptance","planned start and end|date|P|From the engine"]},
+{id:"TD-02",g:"Transactions",n:"Screen batch",d:"The grouping between plate and project. The brief asks for cost per batch but never defines one.",v:"",c:"",f:[
+"batch number|int|P|","start date, protocol day 0|date|P|Only if batches are staggered","plates|list TD-03|P|","cell line|ref MD-01|P|Only if a batch means one expansion","max plates per batch|int|O|Q-L04"]},
+{id:"TD-03",g:"Transactions",n:"Plate and well",d:"The physical layout. Counts are needed for the calculation, the full map for LIMS export.",v:"",c:"",f:[
+"plate label or barcode|text|P|Q-I02","plate format|ref MD-09|B|","cell line and cell type|ref|P|","is spare|bool|O|Q-L04","well position|text|P|A1 and so on","well role|enum|O|Q-L02, sample, vehicle, positive, untreated, edge excluded","substance and concentration|ref, decimal|B|","replicate number|int|B|","timepoint|text|O|Q-S03"]},
+{id:"TD-04",g:"Transactions",n:"Task",d:"One concrete action on one date. The daily task list is a filter on this.",v:"",c:"",f:[
+"step template snapshot|ref MD-05|P|","protocol day|int|P|","planned date and slot|date|P|","allowed window|earliest, latest|O|Q-P04","plates affected|list or count|P|","media preparation used|ref TD-05|P|Feeding tasks","material demand lines|list|P|","device demand|list|P|","hands-on time|duration|O|Q-P05","assignee|ref|O|Q-W02","status|enum|P|planned, due, done, skipped, deviated","conflicts|list|P|"]},
+{id:"TD-05",g:"Transactions",n:"Media preparation",d:"One physical bottle, covering several feedings until it expires.",v:"",c:"",f:[
+"recipe snapshot|ref MD-06|B|","planned prep date|date|P|","volume|volume|B|Covered demand plus overage, Q-R05 and Q-R06","expiry, use by|date|B|Q-R04","covered tasks|list TD-04|P|","component lines|material, amount, lot|B|","status|enum|P|planned, prepared, in use, used up, expired","prepared by and at|text, date|P|Execution"]},
+{id:"TD-06",g:"Transactions",n:"Stock lot and movement",d:"standard ERP warehouse stock plus expiry. Movements get new source types.",v:"",c:"",f:[
+"lot number|text|C|standard ERP calls this batch","quantity on hand, reserved, available|decimal|C|standard ERP","received date and PO link|date, ref|C|standard ERP","expiry date|date|P|New, Q-M02","opened or thawed date|date|O|New, Q-R04","remaining in opened unit|decimal|O|New","storage location|text|O|New","QC status|enum|O|New, does release exist","movement types|enum|P|IN, OUT, ADJUSTMENT plus preparation, task consumption, discard expired"]},
+{id:"TD-07",g:"Transactions",n:"Reservation",d:"standard ERP reservations, now time phased and owned by a project instead of a sales order.",v:"",c:"",f:[
+"project, task or preparation|ref|P|","material and quantity|ref, decimal|P|","need date|date|P|New compared to standard ERP","source, lot or incoming PO item|ref|C|standard ERP pattern","status|enum|P|soft from a calculation, hard at release"]},
+{id:"TD-08",g:"Transactions",n:"Order list and PO",d:"Net requirement rounded to packs, grouped by supplier into standard ERP purchase orders.",v:"",c:"",f:[
+"gross need|decimal|B|","usable stock at need date|decimal|B|Expiry aware","reserved by others|decimal|O|Q-M05","incoming from open POs|decimal|P|standard ERP has incoming supply","net need|decimal|B|","packs to order|int|P|Q-M04","first need date|date|P|","order-by date|date|P|Need date minus lead time","price and line total|money|B|","purchase order|ref|C|standard ERP PO unchanged"]},
+{id:"TD-09",g:"Transactions",n:"Device booking",d:"Per task for time devices, per batch for incubator space.",v:"",c:"",f:[
+"device or device type|ref MD-12|P|","project and task|ref|P|","start and end|datetime|P|Q-D01 for granularity","capacity used|int|P|Time, slots or plate positions","status|enum|P|tentative, confirmed, cancelled","external calendar event id|text|O|Q-D03"]},
+{id:"TD-10",g:"Transactions",n:"Cost line and quote",d:"Typed cost lines allocated to plate, batch or project. Quote follows the standard ERP sales offer.",v:"",c:"",f:[
+"cost type|enum|P|Q-K01, material, consumable, labour, device, external, overhead, margin","source|ref|P|Material, task, readout","quantity, unit, unit price, amount|decimal|P|","allocation level|enum|B|plate, batch, project","trace node id|text|P|Links the number to its formula","quote number, date, validity|text, date|C|standard ERP sales offer","quote positions|list|O|Q-K05, what the customer actually sees"]},
+{id:"TD-11",g:"Transactions",n:"LIMS sample",d:"An export file rather than an integration. The job ad names an ELN, no LIMS product.",v:"",c:"",f:[
+"sample id or barcode|text|O|Q-I02","level|enum|O|Q-O03, well, plate, pooled","project, plate, well, substance, replicate|ref|P|","readout|ref MD-11|P|","sampling date|date|P|","exported at and file|date, text|P|"]},
+{id:"TD-12",g:"Transactions",n:"Calculation run and audit",d:"Every run is immutable and every number carries its formula, so a mismatch can be traced.",v:"",c:"",f:[
+"run id and project|ref|P|","input hash|text|P|Request, master data versions, stock, settings, today","status and validation errors|enum, list|P|","outputs|json|P|All outputs of the run","trace node|id, label, value, unit, formula, inputs|P|","rounding applied|text|P|Q-G03","reference value and delta|decimal|P|Filled when the reference is loaded","audit entries|who, when, before, after|C|standard ERP audit"]}],
+relations:[
+{id:"R-01",a:"MD-03",b:"MD-04",card:"1 : n",l:"has phases, ordered",s:"P",q:"Q-P01, can phases overlap",v:"",c:""},
+{id:"R-01b",a:"MD-04",b:"MD-05",card:"1 : n",l:"has steps",s:"P",q:"Q-P03",v:"",c:""},
+{id:"R-02",a:"MD-04",b:"MD-06",card:"n : 1",l:"resolves to a recipe, keyed by cell type and plate format",s:"B",q:"Q-R01, does plate format change composition or only volume",v:"",c:""},
+{id:"R-03",a:"MD-06",b:"MD-06C",card:"1 : n",l:"bill of materials",s:"B",q:"Q-R02, which spec types occur",v:"",c:""},
+{id:"R-03b",a:"MD-06C",b:"MD-07",card:"n : 1",l:"each component names one material",s:"B",q:"Q-R02, are there pre-diluted intermediates",v:"",c:""},
+{id:"R-04",a:"MD-07",b:"MD-08",card:"1 : n",l:"is sold by suppliers at a pack price",s:"P",q:"Q-M04",v:"",c:""},
+{id:"R-05",a:"TD-01",b:"MD-03",card:"n : 1",l:"a project runs one protocol",s:"P",q:"Q-G04, or several when cell types differ",v:"",c:""},
+{id:"R-06",a:"TD-01",b:"TD-02",card:"1 : n",l:"splits into batches",s:"P",q:"Q-K03, what is a batch",v:"",c:""},
+{id:"R-06b",a:"TD-02",b:"TD-03",card:"1 : n",l:"holds plates and wells",s:"P",q:"Q-L02, Q-L04",v:"",c:""},
+{id:"R-07",a:"TD-03",b:"MD-09",card:"n : 1",l:"format sets wells and working volume",s:"B",q:"Q-L01",v:"",c:""},
+{id:"R-08",a:"MD-05",b:"MD-07",card:"n : m",l:"step consumes materials, with a basis per well, plate, batch or project",s:"P",q:"Q-M03",v:"",c:""},
+{id:"R-08b",a:"MD-05",b:"MD-12",card:"n : m",l:"step occupies devices",s:"P",q:"Q-D02",v:"",c:""},
+{id:"R-09",a:"MD-11",b:"MD-05",card:"1 : n",l:"readout adds steps at an offset from an anchor",s:"P",q:"Q-O02, which steps and when",v:"",c:""},
+{id:"R-10",a:"MD-07",b:"TD-06",card:"1 : n",l:"is stocked as lots with expiry",s:"C",q:"Q-M02",v:"",c:""},
+{id:"R-10b",a:"TD-06",b:"TD-07",card:"1 : n",l:"lots are reserved for a need date",s:"C",q:"Q-M05, across projects",v:"",c:""},
+{id:"R-11",a:"TD-04",b:"TD-05",card:"n : 1",l:"feeding tasks are covered by one preparation until it expires",s:"P",q:"Q-R04, Q-R05",v:"",c:""},
+{id:"R-11b",a:"TD-05",b:"TD-06",card:"n : m",l:"preparation consumes lots",s:"P",q:"Q-K02, is waste charged",v:"",c:""},
+{id:"R-12",a:"TD-01",b:"TD-10",card:"1 : n",l:"cost lines roll up to plate, batch and project",s:"B",q:"Q-K01, allocation key",v:"",c:""},
+{id:"R-13",a:"TD-01",b:"TD-04",card:"1 : n",l:"schedule is a dated task list",s:"P",q:"Q-PL01",v:"",c:""},
+{id:"R-14",a:"TD-08",b:"TD-06",card:"n : m",l:"goods receipt creates lots",s:"C",q:"",v:"",c:""}],
+processes:[
+{id:"P-01",n:"Master data import",o:"Systasy sample data arrives",steps:"Receive files and keep the originals untouched\nMap columns to entities, expert checks the mapping\nValidate: every component resolves a material, every material has unit, pack and price\nValidate: every phase, cell type and plate format resolves a recipe\nShow issues in the cleanup workspace, reuse standard ERP\nCommit as master data version 1\nLoad the reference calculation as a test fixture",out:"Complete master data, list of gaps",q:"Q-G02 format of the data",v:"",c:""},
+{id:"P-02",n:"Request intake",o:"Customer inquiry or internal screen",steps:"Fill the input form, derived counts shown live\nValidate, list what is missing instead of defaulting\nSave as project in draft\nRun the calculation",out:"Project and calculation run",q:"Today a quote takes hours, target is minutes",v:"",c:""},
+{id:"P-03",n:"Layout expansion",o:"Engine stage 1",steps:"Substances times concentrations give conditions\nAdd replicates at the configured level\nAdd control wells\nFit into plates using usable wells, add spares\nGroup plates into batches\nOptionally generate the full well map",out:"Conditions, wells, plates, batches",q:"Q-L02, Q-L03, Q-L04, Q-K03",v:"",c:""},
+{id:"P-04",n:"Backward scheduling",o:"Engine stage 2",steps:"Work out the anchor from the desired date and its meaning\nSubtract readout time to data and reporting time\nPlace the readout on the last allowed working day\nWalk the protocol backwards to day 0\nApply the calendar, shift within the step window or warn\nOffset per batch if batches are staggered\nPrepend preparation days, coating and cell thaw\nPrepend procurement order-by dates\nCheck the first required action is not in the past",out:"Dated tasks, project start, conflicts",q:"Q-PL01, Q-P01, Q-P04, Q-W01",v:"",c:""},
+{id:"P-05",n:"Media calculation",o:"Engine stage 3, likely the core of the reference",steps:"Per feeding task resolve the recipe and compute the event volume\nGroup events of the same recipe into preparations within shelf life\nPreparation volume is covered demand plus overage, then rounded\nCompute each component amount by its spec type\nBase medium fills the remainder to volume\nComponents added fresh at use are computed per event\nProduce recipe sheets and the media plan",out:"Preparations, component amounts, expiry dates",q:"Q-R02 to Q-R07",v:"",c:""},
+{id:"P-06",n:"Materials and stock check",o:"Engine stage 4",steps:"Collect demand from preparations, steps, readouts and consumables\nConvert to base units and apply consumption granularity\nSort demand by need date\nAllocate usable lots, expiry aware, FEFO or FIFO\nAllocate incoming purchase orders arriving in time\nWhat remains is the net need\nRound to packs and compute the order-by date\nFlag orders that would already be too late",out:"Order list, soft reservations, conflicts",q:"Q-M02, Q-M03, Q-M04",v:"",c:""},
+{id:"P-07",n:"Procurement",o:"Project released or order lines accepted",steps:"Group order lines by supplier into a purchase order\nSend, confirm, lock\nTrack shipment and ETA\nGoods receipt with lot number and expiry date\nIncoming reservations become lot reservations",out:"Purchase orders, lots, updated stock",q:"Reused from standard ERP almost unchanged",v:"",c:""},
+{id:"P-08",n:"Device booking",o:"Engine stage 5",steps:"Generate time demand per task and space demand per batch\nAssign concrete devices of the required type\nCheck against existing confirmed bookings and capacity\nFlag overlaps and over-capacity\nOn release make tentative bookings confirmed",out:"Bookings, calendar view, conflicts",q:"Q-D01, Q-D02, Q-D03",v:"",c:""},
+{id:"P-09",n:"Costing, quote, release",o:"Engine stage 7 and handover",steps:"Build typed cost lines for every consumed quantity\nAggregate per plate, batch and project\nGenerate the quote with validity and payment terms\nOn acceptance freeze all snapshots\nOn release create hard reservations, confirm bookings, hand order lines to purchasing",out:"Cost sheet, quote, released project",q:"Q-K01, Q-K02, Q-K05",v:"",c:""},
+{id:"P-10",n:"Execution at the bench",o:"Out of scope for the prototype, part of the product",steps:"Daily task list per person\nConfirm a media preparation, pick lots, book the movement\nMark tasks done, skipped or deviated\nDiscard expired preparations and lots\nReplan from the current state after a deviation\nCompare actual against planned cost",out:"Reality recorded against the plan",q:"Q-PL03",v:"",c:""},
+{id:"P-11",n:"LIMS export",o:"After layout and readout are known",steps:"Generate the sample list from the well map and sample level\nAssign sample ids by the house convention\nExport in the target format, CSV for the prototype",out:"Sample list file",q:"Q-I01, Q-I02, Q-O03",v:"",c:""},
+{id:"P-12",n:"Reference validation",o:"The success criterion, built first",steps:"Encode the reference screen as a request fixture\nEncode the expected outputs line by line\nRun the engine and compare each value against its trace node\nReport matched, delta or missing\nFor each delta find the first diverging node in the trace\nFix the rule or the setting, never hard-code the expected number\nKeep it as an automated test",out:"Green or red, line by line",q:"Q-G03 decides what can even be compared",v:"",c:""}],
+questions:[
+["Q-G03","What does the reference calculation contain: totals or line items, which stages, where does it round","A","Sample data"],
+["Q-K03","What is a batch in cost per plate, batch and project","A","Systasy"],
+["Q-PL01","Is the desired date the start, the readout or the delivery of results","A","Systasy"],
+["Q-K01","Which cost components are in the reference, and how are they allocated to plates","A","Sample data"],
+["Q-K02","Exact use or opened packs, is waste charged to the project","A","Systasy"],
+["Q-L03","Dose points per substance, timepoints, and whether replicates are wells, plates or batches","A","Systasy"],
+["Q-O01","Which readouts are offered, with their added steps, materials, devices and time to data","A","Systasy"],
+["Q-C01","Does planning start at seeding, or does iPSC thaw and expansion count","A","Expert"],
+["Q-G04","One project, one cell type and line, or several combined","B","Systasy"],
+["Q-S03","Single dose or repeated with feedings, how many timepoints","A","Systasy"],
+["Q-P01","What is day 0, are phases defined by day ranges, can they overlap","A","Sample data"],
+["Q-P02","Feeding frequency per phase, full or partial change, explicit days or a pattern","A","Sample data"],
+["Q-P03","Which step types exist, do early phases run in other vessels before replating","A","Expert"],
+["Q-P04","How flexible is each step in time, can a feeding move off a weekend","B","Expert"],
+["Q-R01","Does plate format change the composition or only the volume","A","Expert"],
+["Q-R02","How are components specified, and are stock concentrations given","A","Sample data"],
+["Q-R03","Which components go into the bottle and which are added fresh at use","A","Expert"],
+["Q-R04","Shelf life rules for complete media, opened supplements and aliquots","A","Expert"],
+["Q-R05","Standard prep sizes, prepare for how many days, prep on the day of use","A","Expert"],
+["Q-R06","Overage and dead volume, how much and at which level","A","Expert"],
+["Q-R07","Fill to volume: are additive volumes subtracted from the base medium","A","Sample data"],
+["Q-L01","Plate formats per phase and the working volume per well","A","Sample data"],
+["Q-L02","Edge wells, controls per plate, randomisation","A","Expert"],
+["Q-L04","Max plates per batch and per person per day, spare plates","B","Expert"],
+["Q-M01","Which material fields does the sample data actually carry","A","Sample data"],
+["Q-M02","Are expiry dates given, FEFO, must a lot be valid at need date or until used up","B","Expert"],
+["Q-M03","Are consumables part of the calculation at all","A","Sample data"],
+["Q-M04","Pack rounding, minimum order quantity, safety stock, lead times","B","Systasy"],
+["Q-M05","Is stock shared with other running projects","C","Systasy"],
+["Q-D01","Device list, capacity model, booking granularity","B","Sample data"],
+["Q-D02","Which steps use which device and for how long","B","Expert"],
+["Q-D03","Existing booking tool, or is a mock enough","C","Systasy"],
+["Q-O02","pathwayPROFILER: when are sensors introduced, cost per sample, sequencing in-house","B","Systasy"],
+["Q-O03","Sample level: per well, pooled or per plate","B","Systasy"],
+["Q-S01","Who supplies the substances and are they costed","B","Systasy"],
+["Q-S02","Stock concentration, solvent, maximum solvent percent, dilution series","B","Expert"],
+["Q-W01","Working days, is weekend work allowed and for which steps","B","Expert"],
+["Q-W02","Model staff capacity or not","C","Systasy"],
+["Q-K04","Currency, VAT, discounts, price validity","C","Systasy"],
+["Q-K05","What does the customer quote actually show","B","Systasy"],
+["Q-I01","Which LIMS or ELN, what gets registered, import format","C","Systasy"],
+["Q-I02","Sample id and barcode conventions","C","Systasy"],
+["Q-PL02","Which conflicts matter most, hard against soft constraints","B","Systasy"],
+["Q-PL03","Is replanning during execution in scope","C","Systasy"],
+["Q-C02","Seeding density and where the cells come from","B","Expert"],
+["Q-C03","Which cell line attributes matter","C","Systasy"],
+["Q-C04","Does the cell type change the protocol or only the recipes","A","Expert"],
+["Q-P05","Hands-on time per step","C","Expert"],
+["Q-P06","Do running projects keep their protocol version","C","Systasy"],
+["Q-G01","Which of the five building blocks do we cover","A","Team"],
+["Q-G02","Format of the sample data, and has it arrived","A","Systasy"]]
+};
+
+function byId(id){return state.entities.find(function(e){return e.id===id})}
+function hasF(e,n){return e.f.some(function(f){return f.n===n})}
+function addF(e,n,t,s,note,pos){
+ if(!e||hasF(e,n))return;
+ var f={n:n,t:t,s:s,note:note||""};
+ if(pos==null)e.f.push(f);else e.f.splice(pos,0,f);
+}
+function addRel(r){
+ if(state.relations.some(function(x){return x.id===r.id}))return;
+ state.relations.push(r);
+}
+function migrate(){
+ state.meta=state.meta||{};
+ if(state.meta.schema>=7)return;
+ var cs=byId("MD-02");
+ if(cs){
+  if(cs.n==="Cell type")cs.n="Cell state";
+  if(/^The differentiated target cell/.test(cs.d))
+   cs.d="One stage a cell can be in: iPSC, neural progenitor, immature neuron, mature excitatory neuron. Protocols move cells from one state to the next.";
+  addF(cs,"can be a starting point","bool","B","Confirmed by the team, intermediate stages are stable and can be frozen",1);
+  addF(cs,"can be a screening target","bool","B","Only some states are worth screening on",2);
+  addF(cs,"stage order","int","P","Roughly how far along, for sorting and for finding a path",3);
+ }
+ var pr=byId("MD-03");
+ if(pr){
+  addF(pr,"from state","ref MD-02","P","Which state the protocol starts from",3);
+  addF(pr,"to state","ref MD-02","P","Which state it produces. From and to make the protocol a step between two states",4);
+  addF(pr,"can be chained","bool","P","Whether its output state can feed another protocol");
+  if(/^The reusable plan of a differentiation/.test(pr.d))
+   pr.d="A reusable step from one cell state to another, made of phases. Several can be chained, so a screen can start from a frozen intermediate instead of always from iPSCs.";
+ }
+ if(!byId("TD-13")){
+  state.entities.push({id:"TD-13",g:"Transactions",n:"Cell stock",d:"Frozen vials actually in the house: which line, in which state, how many. Answers whether a requested starting point exists before anything is planned.",v:"",c:"",f:[
+   {n:"cell line",t:"ref MD-01",s:"P",note:"Which donor the material comes from"},
+   {n:"state",t:"ref MD-02",s:"B",note:"Which stage the vials are frozen at"},
+   {n:"vials on hand",t:"int",s:"P",note:""},
+   {n:"vials reserved",t:"int",s:"P",note:"Blocked by a released project"},
+   {n:"cells per vial",t:"decimal",s:"O",note:"Needed to work out how many vials a seeding consumes"},
+   {n:"passage number",t:"int",s:"O",note:"Does a passage limit apply"},
+   {n:"frozen on",t:"date",s:"O",note:""},
+   {n:"storage location",t:"text",s:"O",note:""},
+   {n:"expiry or re-test date",t:"date",s:"O",note:"Is there a limit on how long vials stay usable"}]});
+ }
+ addRel({id:"R-15",a:"MD-03",b:"MD-02",card:"n : 1",l:"starts from the state",s:"P",q:"Confirmed as stable states, which ones exist exactly is open",v:"",c:""});
+ addRel({id:"R-16",a:"MD-03",b:"MD-02",card:"n : 1",l:"produces the state",s:"P",q:"",v:"",c:""});
+ addRel({id:"R-17",a:"TD-13",b:"MD-01",card:"n : 1",l:"holds frozen vials of the line",s:"P",q:"",v:"",c:""});
+ addRel({id:"R-18",a:"TD-13",b:"MD-02",card:"n : 1",l:"frozen at the state",s:"P",q:"",v:"",c:""});
+ addRel({id:"R-19",a:"TD-01",b:"MD-02",card:"n : m",l:"names a start state and a target state",s:"P",q:"Q-C01, does the project begin at thaw or at seeding",v:"",c:""});
+ addRel({id:"R-20",a:"TD-01",b:"TD-13",card:"n : m",l:"consumes vials from stock",s:"P",q:"Only if expansion is inside the project",v:"",c:""});
+ var qs=state.questions;
+ function hasQ(id){return qs.some(function(q){return q.id===id})}
+ var c1=qs.find(function(q){return q.id==="Q-C01"});
+ if(c1&&!c1.a){c1.a="Intermediate stages are stable states, they are frozen and restarted from. Still open: whether thaw and expansion are inside the project or happen beforehand.";c1.st="answered"}
+ if(!hasQ("Q-C05"))qs.push({id:"Q-C05",t:"Which cell states exist exactly, and which of them do you freeze and restart from",p:"A",w:"Expert",a:"",st:"open"});
+ if(!hasQ("Q-C06"))qs.push({id:"Q-C06",t:"Is a screen ever planned as a chain of two protocols, or always one protocol end to end",p:"A",w:"Expert",a:"",st:"open"});
+ if(!hasQ("Q-C07"))qs.push({id:"Q-C07",t:"How many cells does one vial hold, and how many vials does a seeding of one plate consume",p:"B",w:"Expert",a:"",st:"open"});
+ state.meta.schema=2;
+ addF(byId("MD-02"),"default medium","ref MD-06","B","Usually known for a state. A phase or a project may override it, the default stays on record",4);
+ addF(byId("MD-04"),"medium override","ref MD-06","P","Empty means take the default from the cell state. Filled means this phase deviates");
+ addF(byId("MD-04"),"override reason","text","P","Why it deviates, so the standard stays visible next to it");
+ addF(byId("TD-01"),"medium overrides used","list","P","Which defaults this project deviated from, with the reason, kept for the record");
+ addRel({id:"R-21",a:"MD-02",b:"MD-06",card:"n : 1",l:"has a default medium",s:"B",q:"Which medium per state is still to be filled in",v:"",c:""});
+ addRel({id:"R-22",a:"MD-04",b:"MD-06",card:"n : 1",l:"may override that default for its phase",s:"P",q:"Does an override apply to one phase or the whole project",v:"",c:""});
+ var r02=state.relations.find(function(x){return x.id==="R-02"});
+ if(r02&&r02.l.indexOf("default")<0)r02.l="resolves to a recipe, by default the one on the cell state";
+ if(!hasQ2("Q-R08"))state.questions.push({id:"Q-R08",t:"Which medium is the default for each cell state",p:"A",w:"Expert",a:"",st:"open"});
+ if(!hasQ2("Q-R09"))state.questions.push({id:"Q-R09",t:"Who may override a default medium, and does the override hold for one phase or the whole project",p:"B",w:"Expert",a:"",st:"open"});
+ if(state.meta.schema<4){
+  var cs4=byId("MD-02");
+  if(cs4){
+   if(cs4.n==="Cell state")cs4.n="Cell type";
+   if(/^One stage a cell can be in/.test(cs4.d))
+    cs4.d="A kind or stage of cell the lab works with: stem cell, precursor, mature excitatory neuron. A protocol leads from one to the next.";
+   delF(cs4,"can be a starting point");delF(cs4,"can be a screening target");delF(cs4,"stage order");
+  }
+  delEnt("TD-13");delRel("R-17");delRel("R-18");delRel("R-20");delQ("Q-C07");
+ }
+ if(state.meta.schema<5){
+  var N="Structural link, this is what holds the model together, not a question for the lab";
+  addF(byId("MD-04"),"protocol","ref MD-03","P",N,0);
+  addF(byId("MD-05"),"phase","ref MD-04","P",N,0);
+  addF(byId("MD-06C"),"recipe","ref MD-06","P",N,0);
+  addF(byId("TD-02"),"project","ref TD-01","P",N,0);
+  addF(byId("TD-03"),"batch","ref TD-02","P",N,0);
+  addF(byId("TD-04"),"project","ref TD-01","P",N,0);
+  addF(byId("TD-05"),"project","ref TD-01","P",N,0);
+  addF(byId("TD-06"),"material","ref MD-07","P",N,0);
+  addF(byId("TD-08"),"project","ref TD-01","P",N,0);
+  addF(byId("TD-10"),"project","ref TD-01","P",N,0);
+  addF(byId("MD-06"),"components","list MD-06C","P","The additive lines of this recipe, one per compound",3);
+  addF(byId("MD-04"),"steps","list MD-05","P","The actions that happen during this phase");
+  addF(byId("TD-01"),"batches","list TD-02","P","");
+  addRel({id:"R-23",a:"MD-04",b:"MD-05",card:"1 : n",l:"is carried out as steps",s:"P",q:"",v:"",c:""});
+  addRel({id:"R-24",a:"TD-01",b:"TD-02",card:"1 : n",l:"is split into batches",s:"P",q:"Q-K03",v:"",c:""});
+  addRel({id:"R-25",a:"TD-06",b:"MD-07",card:"n : 1",l:"is a delivered lot of the material",s:"C",q:"",v:"",c:""});
+ }
+ if(state.meta.schema<6){
+  var RN=[["MD-06C","spec value and unit","spec value"],["MD-07","pack size and unit","pack size"],
+   ["MD-08","pack size and unit","pack size"],["MD-08","price per pack and currency","price per pack"],
+   ["TD-03","substance and concentration","substance"],["TD-07","material and quantity","material"],
+   ["TD-10","quantity, unit, unit price, amount","quantity"],["MD-06","standard prep sizes","standard prep size"]];
+  RN.forEach(function(r){var e=byId(r[0]);if(!e)return;var f=e.f.find(function(x){return x.n===r[1]});if(f)f.n=r[2]});
+  var U=[
+   ["MD-02","seeding density per format","cells per well, or per square centimetre"],
+   ["MD-04","duration variability","days"],["MD-04","working volume per well","volume, for example microlitres"],
+   ["MD-05","time window","days"],["MD-05","exchange fraction","ratio or percent"],["MD-05","hands-on time","minutes or hours"],
+   ["MD-06","shelf life after preparation","days or weeks"],["MD-06","standard prep size","volume"],
+   ["MD-06C","spec value","depends on the spec type: micromolar, milligram per millilitre, percent, or x"],
+   ["MD-06C","stock concentration","concentration"],
+   ["MD-07","pack size","volume, mass or count"],["MD-07","stock concentration","concentration"],
+   ["MD-07","shelf life after opening or thaw","days"],["MD-07","aliquot size","volume or mass"],["MD-07","safety stock","same as the base unit"],
+   ["MD-08","pack size","volume, mass or count"],["MD-08","price per pack","currency"],["MD-08","lead time","days"],
+   ["MD-09","working volume per well","volume"],["MD-09","surface area per well","area"],
+   ["MD-10","stock concentration","concentration"],["MD-10","max solvent fraction per well","percent"],["MD-10","molecular weight","gram per mole"],
+   ["MD-11","time to data","days"],
+   ["MD-12","booking granularity","minutes"],["MD-12","hourly cost rate","currency"],
+   ["MD-15","labour rate","currency per hour"],["MD-15","device rate","currency per hour or per plate-day"],
+   ["MD-15","external service price","currency per sample"],["MD-15","overhead","percent or currency"],
+   ["MD-15","margin","percent"],["MD-15","risk buffer","percent or plates"],
+   ["MD-17","overage on media volume","percent or volume"],["MD-17","dead volume per plate or reservoir","volume"],
+   ["TD-04","hands-on time","minutes"],["TD-05","volume","volume"],
+   ["TD-06","quantity on hand, reserved, available","same as the material base unit"],
+   ["TD-08","gross need","same as the material base unit"],["TD-08","net need","same as the material base unit"],
+   ["TD-08","price and line total","currency"]];
+  U.forEach(function(u){
+   var e=byId(u[0]);if(!e)return;
+   var i=e.f.findIndex(function(f){return f.n===u[1]});if(i<0)return;
+   var nm=u[1]+" unit";
+   if(e.f.some(function(f){return f.n===nm}))return;
+   e.f.splice(i+1,0,{n:nm,t:"ref MD-14",s:"P",note:u[2]});
+  });
+  var t3=byId("TD-03");
+  if(t3&&!t3.f.some(function(f){return f.n==="concentration"})){
+   var i3=t3.f.findIndex(function(f){return f.n==="substance"});
+   t3.f.splice(i3+1,0,{n:"concentration",t:"decimal",s:"B",note:"The dose in this well"},
+                      {n:"concentration unit",t:"ref MD-14",s:"P",note:"concentration"});
+  }
+  var t7=byId("TD-07");
+  if(t7&&!t7.f.some(function(f){return f.n==="quantity"})){
+   var i7=t7.f.findIndex(function(f){return f.n==="material"});
+   t7.f.splice(i7+1,0,{n:"quantity",t:"decimal",s:"P",note:""},
+                      {n:"quantity unit",t:"ref MD-14",s:"P",note:"same as the material base unit"});
+  }
+  var t10=byId("TD-10");
+  if(t10&&!t10.f.some(function(f){return f.n==="quantity unit"})){
+   var iA=t10.f.findIndex(function(f){return f.n==="quantity"});
+   t10.f.splice(iA+1,0,{n:"quantity unit",t:"ref MD-14",s:"P",note:""},
+                       {n:"unit price",t:"money",s:"P",note:""},
+                       {n:"amount",t:"money",s:"P",note:""},
+                       {n:"currency",t:"ref MD-14",s:"P",note:"currency"});
+  }
+  var u14=byId("MD-14");
+  if(u14){
+   u14.d="Every quantity in the model points here for its unit. Value and unit are always two separate fields, never one text, because only then can the engine convert and compute.";
+   addF(u14,"referenced by","every quantity field","P","Deliberately left out of the connection diagram, it would connect to almost every entity");
+  }
+  var cd=byId("TD-01");
+  if(cd){var f=cd.f.find(function(x){return x.n==="conditions"});
+   if(f)f.note="Q-L03. Each condition carries substance, dose, dose unit and timepoint";}
+ }
+ if(state.meta.schema<7){
+  var st=byId("MD-05");
+  if(st){
+   var ph=st.f.find(function(f){return f.n==="phase"});
+   if(ph)ph.note="Structural link. Leave empty when this step belongs to a readout instead of a phase";
+   addF(st,"readout","ref MD-11","P","Structural link. Exactly one of phase or readout is filled, never both",1);
+   var dp=st.f.findIndex(function(f){return f.n==="day pattern"});
+   if(dp>=0&&!st.f.some(function(f){return f.n==="anchor"})){
+    st.f.splice(dp+1,0,
+     {n:"anchor",t:"enum",s:"P",note:"What the offset counts from: treatment day, protocol end, readout day. Readout steps use this instead of a day pattern"},
+     {n:"offset",t:"int",s:"P",note:"Negative is before the anchor, for example sensors five days before treatment"},
+     {n:"offset unit",t:"ref MD-14",s:"P",note:"days"});
+   }
+   var dpf=st.f.find(function(f){return f.n==="day pattern"});
+   if(dpf&&dpf.note.indexOf("phase steps")<0)dpf.note="Q-P02. For steps inside a phase. Readout steps use anchor and offset instead";
+  }
+  var ro=byId("MD-11");
+  if(ro){
+   var as=ro.f.find(function(f){return f.n==="added steps"});
+   if(as){as.n="steps";as.t="list MD-05";as.note="The extra steps this readout inserts. Each one is an MD-05 row pointing back here with its own anchor and offset. Content open, Q-O02";}
+  }
+  var r9=state.relations.find(function(x){return x.id==="R-09"});
+  if(r9)r9.l="owns the extra steps it inserts";
+ }
+ state.meta.schema=7;
+}
+function delF(e,n){if(!e)return;var i=e.f.findIndex(function(f){return f.n===n});if(i>=0)e.f.splice(i,1)}
+function delEnt(id){var i=state.entities.findIndex(function(e){return e.id===id});if(i>=0)state.entities.splice(i,1)}
+function delRel(id){var i=state.relations.findIndex(function(r){return r.id===id});if(i>=0)state.relations.splice(i,1)}
+function delQ(id){var i=state.questions.findIndex(function(q){return q.id===id});if(i>=0)state.questions.splice(i,1)}
+function hasQ2(id){return state.questions.some(function(q){return q.id===id})}
+
+var KEY="laberp-workbench-v1";
+var state=null,cur=null,tab="overview";
+
+function norm(s){
+ var d=JSON.parse(JSON.stringify(s));
+ d.entities.forEach(function(e){
+  e.f=e.f.map(function(x){
+   if(typeof x!=="string")return x;
+   var p=x.split("|");return {n:p[0]||"",t:p[1]||"",s:p[2]||"P",note:p[3]||""};
+  });
+ });
+ d.questions=d.questions.map(function(q){
+  if(!Array.isArray(q))return q;
+  return {id:q[0],t:q[1],p:q[2],w:q[3],a:"",st:"open"};
+ });
+ return d;
+}
+function load(){
+ try{var raw=localStorage.getItem(KEY);if(raw){state=JSON.parse(raw);return}}catch(e){}
+ state=norm(SEED);
+}
+var saveT=null;
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(state));
+  var el=document.getElementById("saved");el.textContent="Saved";
+  clearTimeout(saveT);saveT=setTimeout(function(){el.textContent=""},1400);
+ }catch(e){document.getElementById("saved").textContent="Could not save locally"}
+ stats();
+}
+function stats(){
+ var nf=0,no=0;
+ state.entities.forEach(function(e){nf+=e.f.length;e.f.forEach(function(f){if(f.s==="O")no++})});
+ var ans=state.questions.filter(function(q){return q.st!=="open"}).length;
+ document.getElementById("stats").innerHTML=
+  "<b>"+state.entities.length+"</b> entities &middot; <b>"+nf+"</b> fields, <b>"+no+"</b> still open &middot; <b>"+
+  state.relations.length+"</b> relations &middot; <b>"+state.processes.length+"</b> processes &middot; <b>"+
+  ans+"/"+state.questions.length+"</b> questions answered";
+}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function setPath(p,v){
+ var k=p.split("."),o=state;
+ for(var i=0;i<k.length-1;i++)o=o[k[i]];
+ o[k[k.length-1]]=v;
+}
+function sel(path,val,opts,cls){
+ return '<select data-p="'+path+'" class="'+(cls||"")+'">'+opts.map(function(o){
+  var v=Array.isArray(o)?o[0]:o,l=Array.isArray(o)?o[1]:o;
+  return '<option value="'+esc(v)+'"'+(String(val)===String(v)?" selected":"")+'>'+esc(l)+'</option>';
+ }).join("")+'</select>';
+}
+var ST=[["B","BRIEF, given"],["P","PROPOSED, confirm"],["O","OPEN, unknown"],["C","STANDARD, already solved"]];
+var VD=[["","not reviewed"],["ok","confirmed"],["change","needs change"],["drop","wrong or not needed"]];
+var PR=[["A","A blocks the reference"],["B","B blocks a block"],["C","C later"]];
+var WH=[["Systasy","Systasy"],["Expert","Expert"],["Sample data","Sample data"],["Team","Team"]];
+var QS=[["open","open"],["answered","answered"],["na","not relevant"]];
+
+var TABS=[["overview","Overview"],["entities","Things we store"],["relations","How they connect"],["processes","Processes"],["questions","Open questions"]];
+
+function render(){
+ document.getElementById("tabs").innerHTML=TABS.map(function(t){
+  return '<div class="tab'+(tab===t[0]?" on":"")+'" data-tab="'+t[0]+'">'+t[1]+'</div>';
+ }).join("");
+ var m=document.getElementById("main");
+ if(tab==="overview")m.innerHTML=vOverview();
+ else if(tab==="entities")m.innerHTML=vEntities();
+ else if(tab==="relations")m.innerHTML=vRelations();
+ else if(tab==="processes")m.innerHTML=vProcesses();
+ else m.innerHTML=vQuestions();
+ stats();
+}
+
+function legend(){
+ return '<div class="legend">'+ST.map(function(s){return '<span class="pill s-'+s[0]+'">'+s[1]+'</span>'}).join("")+
+ '<span class="muted">Nothing is guessed. Where a value is unknown the field exists and stays empty.</span></div>';
+}
+
+function vOverview(){
+ var mm=state.modules.map(function(x,i){
+  return '<div class="card"><div class="row" style="justify-content:space-between"><h2>'+esc(x.n)+'</h2>'+
+   sel("modules."+i+".v",x.v,VD)+'</div>'+
+   '<div class="fld"><span class="lab">Purpose</span><textarea rows="2" data-p="modules.'+i+'.p">'+esc(x.p)+'</textarea></div>'+
+   '<div class="fld"><span class="lab">Already standard</span><input data-p="modules.'+i+'.reuse" value="'+esc(x.reuse)+'"></div>'+
+   '<div class="fld"><span class="lab">Open</span><input data-p="modules.'+i+'.open" value="'+esc(x.open)+'"></div>'+
+   '<div class="fld"><span class="lab">Expert comment</span><textarea rows="2" data-p="modules.'+i+'.c" placeholder="What did they say?">'+esc(x.c)+'</textarea></div></div>';
+ }).join("");
+ return '<div class="card" style="margin-bottom:18px"><h2>How to use this</h2>'+
+  '<p>This is the model behind the planning tool, laid out so the whole team can argue with it. Go through the tabs in order, set a verdict on each card and write down what was said. Nothing here is final and nothing is a commitment, the point is to find what is wrong or missing before anyone builds it. Everything saves in this browser as you type. Export JSON keeps the state, Export Markdown writes out a document with every verdict and comment.</p>'+
+  legend()+
+  '<div class="two" style="margin-top:14px"><div class="fld"><span class="lab">Session, who is reviewing</span><input data-p="meta.reviewer" value="'+esc(state.meta.reviewer)+'" placeholder="Olga, Michael, Sven"></div>'+
+  '<div class="fld"><span class="lab">Version and date</span><input data-p="meta.date" value="'+esc(state.meta.date)+'"></div></div></div>'+
+  '<h2 style="margin:0 0 10px">Modules of the system</h2>'+
+  '<p>Eight parts. Some of it is ordinary business software that any company with a warehouse already runs. What does not exist anywhere yet is everything that depends on time and on biology.</p>'+
+  '<div class="cards">'+mm+'</div>';
+}
+
+var openF={},filt="all";
+var GN={"Master data":["The lists the lab keeps","Maintained once, reused in every project"],
+        "Transactions":["What happens in a project","Records created while a screen is planned and run"]};
+function vEntities(){
+ var fc=[["all","All"],["todo","Not reviewed"],["change","Needs change"]];
+ var head='<div class="card" style="margin-bottom:6px"><h2>The things the system has to know about</h2>'+
+  '<p>Each card is one kind of thing the software stores. Read the line, say whether it belongs and whether it is named right, and write down what is missing. The field list under each card is for later and does not need filling in now.</p>'+
+  '<div class="row" style="justify-content:space-between">'+legend()+
+  '<div class="filt">'+fc.map(function(f){return '<button class="sm'+(filt===f[0]?" on":"")+'" data-filt="'+f[0]+'">'+f[1]+'</button>'}).join("")+'</div></div></div>';
+ var groups={},order=[];
+ state.entities.forEach(function(e,i){if(!groups[e.g]){groups[e.g]=[];order.push(e.g)}groups[e.g].push(i)});
+ var body=order.map(function(g){
+  var idx=groups[g].filter(function(i){
+   var e=state.entities[i];
+   if(filt==="todo")return !e.v;
+   if(filt==="change")return e.v==="change"||e.v==="drop";
+   return true;
+  });
+  if(!idx.length)return "";
+  var gl=GN[g]||[g,""];
+  var cards=idx.map(function(i){
+   var e=state.entities[i],b="entities."+i+".";
+   var op=e.f.filter(function(f){return f.s==="O"}).length;
+   var rel=state.relations.filter(function(r){return r.a===e.id||r.b===e.id}).length;
+   var rows=e.f.map(function(f,j){
+    var fb=b+"f."+j+".";
+    return '<tr><td style="width:26%"><input data-p="'+fb+'n" value="'+esc(f.n)+'"></td>'+
+     '<td style="width:18%"><input data-p="'+fb+'t" value="'+esc(f.t)+'"></td>'+
+     '<td style="width:14%">'+sel(fb+"s",f.s,ST)+'</td>'+
+     '<td><input data-p="'+fb+'note" value="'+esc(f.note)+'"></td>'+
+     '<td style="width:26px"><button class="ic" data-delf="'+i+"."+j+'">&times;</button></td></tr>';
+   }).join("");
+   return '<div class="ecard'+(e.v?" rv-"+e.v:"")+'">'+
+    '<div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px">'+
+     '<input data-p="'+b+'id" value="'+esc(e.id)+'" class="idtag" title="short id">'+
+     '<input data-p="'+b+'n" value="'+esc(e.n)+'" style="flex:1;min-width:110px;font-weight:600;border-color:transparent;background:transparent;padding-left:0">'+
+     sel(b+"v",e.v,VD,"")+'</div>'+
+    '<div class="fld" style="margin:6px 0 10px"><textarea rows="2" data-p="'+b+'d" placeholder="What is this, in one line">'+esc(e.d)+'</textarea></div>'+
+    '<textarea rows="2" data-p="'+b+'c" placeholder="What the team said. Missing? Wrong name? Not needed?">'+esc(e.c)+'</textarea>'+
+    '<details'+(openF[e.id]?" open":"")+'><summary data-tog="'+esc(e.id)+'">Details for later: '+e.f.length+' fields'+(op?", "+op+" still unknown":"")+(rel?", "+rel+" connections":"")+'</summary>'+
+     '<table style="margin-top:8px"><thead><tr><th>Field</th><th>Type</th><th>Status</th><th>Note</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
+     '<div class="row" style="margin-top:8px;justify-content:space-between">'+
+      '<button class="sm" data-addf="'+i+'">+ field</button>'+
+      '<button class="ic" data-dele="'+i+'" title="Delete this entity">&times;</button></div>'+
+    '</details></div>';
+  }).join("");
+  return '<div class="secth">'+esc(gl[0])+' <span>&middot; '+esc(gl[1])+' &middot; '+idx.length+'</span></div><div class="egrid">'+cards+'</div>';
+ }).join("");
+ return head+body+'<div style="margin-top:16px"><button class="sm" data-add="entity">+ something we forgot</button></div>';
+}
+var focusId=null;
+function trunc(s,n){s=String(s||"");return s.length>n?s.slice(0,n-1)+"…":s}
+function edgePt(cx,cy,hw,hh,tx,ty){
+ var dx=tx-cx,dy=ty-cy,ax=Math.abs(dx),ay=Math.abs(dy);
+ if(ax<0.001&&ay<0.001)return [cx,cy];
+ var t=Math.min(ax?hw/ax:1e9,ay?hh/ay:1e9);
+ return [cx+dx*t,cy+dy*t];
+}
+function diagram(){
+ var ids=state.entities.map(function(e){return e.id});
+ if(!focusId||ids.indexOf(focusId)<0){
+  var withRel=state.entities.filter(function(e){
+   return state.relations.some(function(r){return r.a===e.id||r.b===e.id});
+  });
+  focusId=(withRel[0]||state.entities[0]||{}).id;
+ }
+ var f=state.entities.find(function(e){return e.id===focusId});
+ if(!f)return "";
+ var links=[];
+ state.relations.forEach(function(r){
+  if(r.a===focusId&&r.b!==focusId)links.push({o:r.b,out:true,r:r});
+  else if(r.b===focusId&&r.a!==focusId)links.push({o:r.a,out:false,r:r});
+ });
+ var W=900,H=440,cx=450,cy=220,hw=92,hh=24,nw=84,nh=22;
+ var svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" role="img"><title>Connections of '+esc(f.n)+'</title>'+
+ '<defs><marker id="dar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">'+
+ '<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>';
+ if(!links.length){
+  svg+='<text x="450" y="210" text-anchor="middle" style="font-size:13px" fill="var(--tx3)">'+esc(f.n)+' has no connections recorded yet</text>';
+ }
+ var n=links.length,rx=300,ry=152;
+ var pts=links.map(function(l,i){
+  var a=-Math.PI/2+(i*2*Math.PI/Math.max(n,1));
+  return [cx+rx*Math.cos(a),cy+ry*Math.sin(a)];
+ });
+ links.forEach(function(l,i){
+  var p=pts[i],s=edgePt(cx,cy,hw,hh,p[0],p[1]),e=edgePt(p[0],p[1],nw,nh,cx,cy);
+  var x1=l.out?s[0]:e[0],y1=l.out?s[1]:e[1],x2=l.out?e[0]:s[0],y2=l.out?e[1]:s[1];
+  svg+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+
+   '" stroke="var(--bd2)" stroke-width="1.2" marker-end="url(#dar)"><title>'+esc(l.r.l)+' ('+esc(l.r.card)+')</title></line>';
+  var mx=(s[0]+e[0])/2,my=(s[1]+e[1])/2;
+  svg+='<rect x="'+(mx-17).toFixed(1)+'" y="'+(my-9).toFixed(1)+'" width="34" height="18" rx="9" fill="var(--bg)"/>'+
+   '<text x="'+mx.toFixed(1)+'" y="'+(my+4).toFixed(1)+'" text-anchor="middle" style="font-size:10.5px" fill="var(--tx3)">'+esc(l.r.card)+'</text>';
+ });
+ links.forEach(function(l,i){
+  var p=pts[i],o=state.entities.find(function(e){return e.id===l.o})||{n:l.o,g:""};
+  var tl=o.g==="Master data";
+  svg+='<g style="cursor:pointer" data-focus="'+esc(l.o)+'">'+
+   '<rect x="'+(p[0]-nw).toFixed(1)+'" y="'+(p[1]-nh).toFixed(1)+'" width="'+(nw*2)+'" height="'+(nh*2)+'" rx="8" '+
+   'fill="'+(tl?"var(--tebg)":"var(--acbg)")+'" stroke="'+(tl?"var(--tebr)":"var(--acbr)")+'" stroke-width="1"/>'+
+   '<text x="'+p[0].toFixed(1)+'" y="'+(p[1]-5).toFixed(1)+'" text-anchor="middle" style="font-size:10px" '+
+   'fill="'+(tl?"var(--te)":"var(--ac)")+'" opacity=".75">'+esc(l.o)+'</text>'+
+   '<text x="'+p[0].toFixed(1)+'" y="'+(p[1]+11).toFixed(1)+'" text-anchor="middle" style="font-size:12.5px;font-weight:500" '+
+   'fill="'+(tl?"var(--te)":"var(--ac)")+'">'+esc(trunc(o.n,21))+'</text></g>';
+ });
+ svg+='<rect x="'+(cx-hw)+'" y="'+(cy-hh)+'" width="'+(hw*2)+'" height="'+(hh*2)+'" rx="9" fill="var(--sf2)" stroke="var(--tx3)" stroke-width="1.5"/>'+
+  '<text x="'+cx+'" y="'+(cy-6)+'" text-anchor="middle" style="font-size:10.5px" fill="var(--tx3)">'+esc(f.id)+'</text>'+
+  '<text x="'+cx+'" y="'+(cy+12)+'" text-anchor="middle" style="font-size:14px;font-weight:600" fill="var(--tx)">'+esc(trunc(f.n,24))+'</text></svg>';
+ var opts=state.entities.map(function(e){
+  var c=state.relations.filter(function(r){return r.a===e.id||r.b===e.id}).length;
+  return '<option value="'+esc(e.id)+'"'+(e.id===focusId?" selected":"")+'>'+esc(e.id)+"  "+esc(e.n)+"  ("+c+")"+'</option>';
+ }).join("");
+ return '<div class="card" style="margin-bottom:14px">'+
+  '<div class="row" style="justify-content:space-between;margin-bottom:6px">'+
+   '<h2 style="margin:0">What connects to what</h2>'+
+   '<span class="row" style="gap:8px"><span class="muted">Centre on</span><select id="focusSel" style="width:260px">'+opts+'</select></span></div>'+
+  '<p style="margin-bottom:4px">Click any surrounding box to move the view onto it. Green is a list the lab keeps, purple is something created inside a project. The small number on each line says how many, so 1 : n means one of the middle has many of the outer one.</p>'+
+  svg+'</div>';
+}
+function vRelations(){
+ var opts=state.entities.map(function(e){return [e.id,e.id+"  "+e.n]});
+ var rows=state.relations.map(function(r,i){
+  var b="relations."+i+".";
+  return '<div class="ecard'+(r.v?" rv-"+r.v:"")+'" style="padding:12px 14px">'+
+   '<div class="row" style="justify-content:space-between;gap:8px">'+
+    '<div class="row" style="gap:6px;flex:1">'+sel(b+"a",r.a,opts,"")+
+    '<input data-p="'+b+'l" value="'+esc(r.l)+'" style="flex:1;min-width:150px">'+
+    sel(b+"b",r.b,opts,"")+
+    '<input data-p="'+b+'card" value="'+esc(r.card)+'" style="width:64px" title="how many">'+'</div>'+
+    sel(b+"v",r.v,VD,"")+
+   '</div>'+
+   '<div class="row" style="margin-top:8px;gap:8px">'+
+    '<input data-p="'+b+'c" value="'+esc(r.c)+'" placeholder="What the team said" style="flex:2">'+
+    '<input data-p="'+b+'q" value="'+esc(r.q)+'" placeholder="still open" style="flex:1">'+
+    '<button class="ic" data-delr="'+i+'">&times;</button></div></div>';
+ }).join("");
+ return diagram()+
+  '<div class="card" style="margin-bottom:14px"><h2>Every connection, in words</h2>'+
+  '<p>Read each line as a sentence. Two of these decide how the whole calculation behaves, which recipe a phase resolves to, and what a batch actually groups together.</p></div>'+
+  '<div style="display:grid;gap:10px">'+rows+'</div>'+
+  '<div style="margin-top:14px"><button class="sm" data-add="relation">+ connection</button></div>';
+}
+function vProcesses(){
+ var cards=state.processes.map(function(p,i){
+  var b="processes."+i+".";
+  return '<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px">'+
+   '<div class="row"><input data-p="'+b+'id" value="'+esc(p.id)+'" style="width:62px">'+
+   '<input data-p="'+b+'n" value="'+esc(p.n)+'" style="width:230px;font-weight:600"></div>'+
+   '<div class="row">'+sel(b+"v",p.v,VD)+'<button class="ic" data-delp="'+i+'">&times;</button></div></div>'+
+   '<div class="fld"><span class="lab">Trigger</span><input data-p="'+b+'o" value="'+esc(p.o)+'"></div>'+
+   '<div class="fld"><span class="lab">Steps, one per line, reorder freely</span>'+
+   '<textarea class="steps" rows="'+Math.max(4,p.steps.split("\n").length+1)+'" data-p="'+b+'steps">'+esc(p.steps)+'</textarea></div>'+
+   '<div class="two"><div class="fld"><span class="lab">Result</span><input data-p="'+b+'out" value="'+esc(p.out)+'"></div>'+
+   '<div class="fld"><span class="lab">Open points</span><input data-p="'+b+'q" value="'+esc(p.q)+'"></div></div>'+
+   '<div class="fld"><span class="lab">Expert comment</span><textarea rows="2" data-p="'+b+'c" placeholder="Is this the real order? What is missing?">'+esc(p.c)+'</textarea></div></div>';
+ }).join("");
+ return '<div class="card" style="margin-bottom:16px"><h2>Processes</h2><p>Each one is a sequence somebody actually performs, or that the software performs for them. Correct the order, add the step that always gets forgotten, and mark where a person has to decide something.</p></div>'+
+  '<div class="cards">'+cards+'</div><div style="margin-top:12px"><button class="sm" data-add="process">+ process</button></div>';
+}
+
+function vQuestions(){
+ var rows=state.questions.map(function(q,i){
+  var b="questions."+i+".";
+  return '<tr><td style="width:62px"><input data-p="'+b+'id" value="'+esc(q.id)+'"></td>'+
+   '<td><input data-p="'+b+'t" value="'+esc(q.t)+'"></td>'+
+   '<td style="width:150px">'+sel(b+"p",q.p,PR)+'</td>'+
+   '<td style="width:120px">'+sel(b+"w",q.w,WH)+'</td>'+
+   '<td style="width:34%"><textarea rows="2" data-p="'+b+'a" placeholder="answer">'+esc(q.a)+'</textarea></td>'+
+   '<td style="width:110px">'+sel(b+"st",q.st,QS)+'</td>'+
+   '<td style="width:28px"><button class="ic" data-delq="'+i+'">&times;</button></td></tr>';
+ }).join("");
+ return '<div class="card"><h2>Open questions</h2><p>Write the answer straight into the row and set the status. Priority A blocks matching Systasy reference calculation, which is how the challenge is scored.</p>'+
+  '<div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Question</th><th>Priority</th><th>Who answers</th><th>Answer</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+  '<div style="margin-top:10px"><button class="sm" data-add="question">+ question</button></div></div>';
+}
+
+document.addEventListener("input",function(ev){
+ var t=ev.target,p=t.getAttribute("data-p");
+ if(!p)return;
+ setPath(p,t.value);save();
+});
+document.addEventListener("change",function(ev){
+ var t=ev.target;
+ if(t.tagName!=="SELECT")return;
+ if(t.id==="focusSel"){focusId=t.value;render();return}
+ var p=t.getAttribute("data-p");
+ if(!p)return;
+ setPath(p,t.value);save();render();
+});
+document.addEventListener("click",function(ev){
+ var t=ev.target.closest("[data-tab],[data-ent],[data-filt],[data-tog],[data-focus],[data-add],[data-addf],[data-delf],[data-dele],[data-delr],[data-delp],[data-delq]");
+ if(!t)return;
+ if(t.dataset.tab){tab=t.dataset.tab;render();return}
+ if(t.dataset.tog){openF[t.dataset.tog]=!openF[t.dataset.tog];return}
+ if(t.dataset.filt){filt=t.dataset.filt;render();return}
+ if(t.dataset.focus){focusId=t.dataset.focus;render();return}
+ if(t.dataset.ent){cur=t.dataset.ent;render();return}
+ if(t.dataset.addf!=null){state.entities[+t.dataset.addf].f.push({n:"",t:"",s:"P",note:""});save();render();return}
+ if(t.dataset.delf!=null){var a=t.dataset.delf.split(".");state.entities[+a[0]].f.splice(+a[1],1);save();render();return}
+ if(t.dataset.dele!=null){if(confirm("Delete this entity?")){state.entities.splice(+t.dataset.dele,1);cur=null;save();render()}return}
+ if(t.dataset.delr!=null){state.relations.splice(+t.dataset.delr,1);save();render();return}
+ if(t.dataset.delp!=null){if(confirm("Delete this process?")){state.processes.splice(+t.dataset.delp,1);save();render()}return}
+ if(t.dataset.delq!=null){state.questions.splice(+t.dataset.delq,1);save();render();return}
+ if(t.dataset.add==="entity"){var id="NEW-"+(state.entities.length+1);state.entities.push({id:id,g:"Master data",n:"New entity",d:"",v:"",c:"",f:[]});cur=id;save();render();return}
+ if(t.dataset.add==="relation"){state.relations.push({id:"R-new",a:state.entities[0].id,b:state.entities[0].id,card:"1 : n",l:"",s:"P",q:"",v:"",c:""});save();render();return}
+ if(t.dataset.add==="process"){state.processes.push({id:"P-new",n:"New process",o:"",steps:"",out:"",q:"",v:"",c:""});save();render();return}
+ if(t.dataset.add==="question"){state.questions.push({id:"Q-new",t:"",p:"B",w:"Expert",a:"",st:"open"});save();render();return}
+});
+
+function dl(name,text,type){
+ var b=new Blob([text],{type:type||"text/plain;charset=utf-8"}),u=URL.createObjectURL(b),a=document.createElement("a");
+ a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},2000);
+}
+function exportJSON(){dl("lab-erp-model.json",JSON.stringify(state,null,1),"application/json")}
+function importJSON(inp){
+ var f=inp.files[0];if(!f)return;
+ var r=new FileReader();
+ r.onload=function(){try{state=JSON.parse(r.result);cur=null;save();render();alert("Imported.")}catch(e){alert("That file could not be read as JSON.")}};
+ r.readAsText(f);inp.value="";
+}
+function resetAll(){
+ if(!confirm("Throw away all edits and comments and go back to the original blueprint?"))return;
+ localStorage.removeItem(KEY);state=norm(SEED);cur=null;render();
+}
+function SN(s){return s==="B"?"BRIEF":s==="P"?"PROPOSED":s==="O"?"OPEN":"STANDARD"}
+function VN(v){return v==="ok"?"confirmed":v==="change"?"needs change":v==="drop"?"wrong or not needed":"not reviewed"}
+function exportMD(){
+ var L=[];
+ L.push("# "+state.meta.title+" — model review");
+ L.push("");
+ L.push("Version "+state.meta.version+", "+state.meta.date+(state.meta.reviewer?", reviewed with "+state.meta.reviewer:""));
+ L.push("");
+ L.push("## Modules");
+ L.push("");
+ state.modules.forEach(function(m){
+  L.push("### "+m.id+" "+m.n);
+  L.push("");
+  L.push(m.p);
+  L.push("");
+  L.push("- Already standard: "+m.reuse);
+  L.push("- Open: "+m.open);
+  L.push("- Verdict: "+VN(m.v));
+  if(m.c)L.push("- Comment: "+m.c);
+  L.push("");
+ });
+ L.push("## Entities");
+ L.push("");
+ state.entities.forEach(function(e){
+  L.push("### "+e.id+" "+e.n);
+  L.push("");
+  L.push(e.d);
+  L.push("");
+  L.push("| Field | Type | Status | Note |");
+  L.push("|---|---|---|---|");
+  e.f.forEach(function(f){L.push("| "+f.n+" | "+f.t+" | "+SN(f.s)+" | "+f.note+" |")});
+  L.push("");
+  L.push("Verdict: "+VN(e.v));
+  if(e.c){L.push("");L.push("Comment: "+e.c)}
+  L.push("");
+ });
+ L.push("## Relationships");
+ L.push("");
+ L.push("| ID | From | Relationship | To | Cardinality | Status | Open point | Verdict | Comment |");
+ L.push("|---|---|---|---|---|---|---|---|---|");
+ state.relations.forEach(function(r){
+  L.push("| "+r.id+" | "+r.a+" | "+r.l+" | "+r.b+" | "+r.card+" | "+SN(r.s)+" | "+r.q+" | "+VN(r.v)+" | "+r.c+" |");
+ });
+ L.push("");
+ L.push("## Processes");
+ L.push("");
+ state.processes.forEach(function(p){
+  L.push("### "+p.id+" "+p.n);
+  L.push("");
+  L.push("Trigger: "+p.o);
+  L.push("");
+  p.steps.split("\n").forEach(function(s,i){if(s.trim())L.push((i+1)+". "+s.trim())});
+  L.push("");
+  L.push("Result: "+p.out);
+  L.push("");
+  L.push("Open points: "+p.q);
+  L.push("");
+  L.push("Verdict: "+VN(p.v));
+  if(p.c){L.push("");L.push("Comment: "+p.c)}
+  L.push("");
+ });
+ L.push("## Open questions");
+ L.push("");
+ L.push("| ID | Question | Priority | Who | Answer | Status |");
+ L.push("|---|---|---|---|---|---|");
+ state.questions.forEach(function(q){
+  L.push("| "+q.id+" | "+q.t+" | "+q.p+" | "+q.w+" | "+(q.a||"").replace(/\n/g," ")+" | "+q.st+" |");
+ });
+ L.push("");
+ dl("lab-erp-model-review.md",L.join("\n"),"text/markdown;charset=utf-8");
+}
+
+load();migrate();save();render();
+</script>
+</body>
+</html>

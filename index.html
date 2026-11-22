@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab screen planning ERP — blueprint overview</title>
+<style>
+:root{
+--bg:#faf9f7;--surface:#ffffff;--surface-2:#f3f1ec;--text:#22211f;--text-2:#5f5e5a;--text-3:#8b8a84;
+--border:#e3e0d9;--border-2:#c9c6bd;
+--accent:#534ab7;--accent-bg:#eeedfe;--accent-br:#7f77dd;
+--teal:#0f6e56;--teal-bg:#e1f5ee;--teal-br:#1d9e75;
+--coral:#993c1d;--coral-bg:#faece7;--coral-br:#d85a30;
+--amber:#854f0b;--amber-bg:#faeeda;--amber-br:#ba7517;
+--radius:8px;
+}
+@media (prefers-color-scheme:dark){:root{
+--bg:#1a1a18;--surface:#232321;--surface-2:#2b2b28;--text:#eceae4;--text-2:#a8a69e;--text-3:#7b7a74;
+--border:#38372f;--border-2:#4b4a42;
+--accent:#afa9ec;--accent-bg:#3c3489;--accent-br:#7f77dd;
+--teal:#9fe1cb;--teal-bg:#085041;--teal-br:#1d9e75;
+--coral:#f0997b;--coral-bg:#712b13;--coral-br:#d85a30;
+--amber:#fac775;--amber-bg:#633806;--amber-br:#ba7517;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:940px;margin:0 auto;padding:0 24px}
+h1{font-size:30px;font-weight:600;margin:0 0 6px;letter-spacing:-0.01em}
+h2{font-size:21px;font-weight:600;margin:0 0 6px;letter-spacing:-0.01em}
+h3{font-size:15px;font-weight:600;margin:0 0 8px}
+p{margin:0 0 14px;color:var(--text-2)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+header{border-bottom:1px solid var(--border);background:var(--surface);padding:34px 0 24px}
+.sub{color:var(--text-2);font-size:15px;margin:0 0 16px}
+.meta{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:12px;padding:4px 10px;border-radius:var(--radius);border:1px solid var(--border);color:var(--text-2);background:var(--surface-2)}
+nav{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 0}
+nav .wrap{display:flex;gap:18px;flex-wrap:wrap}
+nav a{font-size:14px;color:var(--text-2)}
+nav a:hover{color:var(--text)}
+section{padding:46px 0;border-bottom:1px solid var(--border)}
+.lead{max-width:680px;margin-bottom:26px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text-2);margin-top:14px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.track{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:7px}
+.pill{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:9px 4px;cursor:pointer;text-align:center;transition:background .18s,border-color .18s,transform .18s}
+.pill:hover{border-color:var(--border-2)}
+.pill.on{background:var(--accent-bg);border-color:var(--accent-br);transform:translateY(-2px)}
+.pill.done{background:var(--surface-2)}
+.pill .num{font-size:11px;color:var(--text-3)}
+.pill .nm{font-size:12.5px;font-weight:600}
+.barbg{background:var(--border);height:3px;border-radius:2px;margin:11px 0 20px}
+#bar{height:3px;background:var(--accent-br);width:0;border-radius:2px;transition:width .3s linear}
+.chip{font-size:12.5px;border-radius:var(--radius);padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);transition:all .18s}
+.chip.src{background:var(--teal-bg);border-color:var(--teal-br);color:var(--teal)}
+.chip.lit{background:var(--coral-bg);border-color:var(--coral-br);color:var(--coral)}
+.q{font-size:12px;background:var(--amber-bg);color:var(--amber);border-radius:var(--radius);padding:3px 8px;white-space:nowrap}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rowlab{font-size:12px;color:var(--text-3);min-width:72px}
+button{font:inherit;font-size:14px;padding:7px 13px;border-radius:var(--radius);border:1px solid var(--border-2);background:transparent;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+button:hover{background:var(--surface-2)}
+button:active{transform:scale(.98)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.docs{list-style:none;margin:0;padding:0}
+.docs li{border-top:1px solid var(--border)}
+.docs li:first-child{border-top:0}
+.docs a{display:flex;gap:10px;padding:7px 0;font-size:14px;color:var(--text)}
+.docs a:hover{text-decoration:none;color:var(--accent)}
+.docs .id{color:var(--text-3);font-size:12.5px;min-width:46px;font-variant-numeric:tabular-nums;padding-top:1px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;font-size:12.5px;color:var(--text-3);padding:0 10px 8px 0;border-bottom:1px solid var(--border)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--border);color:var(--text-2);vertical-align:top}
+td.id{color:var(--text);font-weight:600;white-space:nowrap;width:62px}
+td.who{white-space:nowrap;width:120px;color:var(--text-3)}
+footer{padding:30px 0 60px;color:var(--text-3);font-size:13px}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.t{font-size:14px;font-weight:600;fill:var(--text)}
+.ts{font-size:12px;fill:var(--text-2)}
+.tm{font-size:11px;fill:var(--text-3)}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+<h1>Lab screen planning ERP</h1>
+<p class="sub">Blueprint overview for the Systasy Bioscience challenge, LMU Startup in 2 Days, team 1.</p>
+<div class="meta">
+<span class="tag">Version 0.1</span>
+<span class="tag">21.11.2026</span>
+<span class="tag">71 documents</span>
+<span class="tag">Draft for domain expert review</span>
+</div>
+</div></header>
+
+<nav><div class="wrap">
+<a href="#pipeline">Pipeline</a><a href="#spine">Data model</a><a href="#docs">Documents</a><a href="#questions">Open questions</a><a href="00_INDEX.md">Index</a>
+</div></nav>
+
+<section id="pipeline"><div class="wrap">
+<div class="lead">
+<h2>How a screen gets planned</h2>
+<p>A handful of parameters and the lab's own master data go in. A deterministic engine runs eight stages and produces the media plan, the schedule, the order list and the cost sheet. Press run, or click any stage.</p>
+</div>
+
+<div class="card">
+<div class="row" style="margin-bottom:10px">
+<span class="rowlab">Goes in</span>
+<span class="chip src">Cell types</span><span class="chip src">Plates and format</span><span class="chip src">Substances</span><span class="chip src">Replicates</span><span class="chip src">Readouts</span><span class="chip src">Desired date</span>
+</div>
+<div class="row" style="margin-bottom:22px">
+<span class="rowlab"></span>
+<span class="chip src">17 master data entities</span><span class="chip src">Stock and lots</span><span class="chip src">Settings</span>
+</div>
+
+<div class="track" id="track">
+<div class="pill on" data-i="0"><div class="num">0</div><div class="nm">Validate</div></div>
+<div class="pill" data-i="1"><div class="num">1</div><div class="nm">Layout</div></div>
+<div class="pill" data-i="2"><div class="num">2</div><div class="nm">Schedule</div></div>
+<div class="pill" data-i="3"><div class="num">3</div><div class="nm">Media</div></div>
+<div class="pill" data-i="4"><div class="num">4</div><div class="nm">Materials</div></div>
+<div class="pill" data-i="5"><div class="num">5</div><div class="nm">Devices</div></div>
+<div class="pill" data-i="6"><div class="num">6</div><div class="nm">Conflicts</div></div>
+<div class="pill" data-i="7"><div class="num">7</div><div class="nm">Costs</div></div>
+</div>
+<div class="barbg"><div id="bar"></div></div>
+
+<div style="background:var(--surface-2);border-radius:12px;padding:18px 20px;min-height:180px">
+<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px">
+<span id="sname" style="font-size:19px;font-weight:600">Validate</span>
+<span id="sdoc" style="font-size:12.5px;color:var(--text-3)">03_input_form, P-02</span>
+</div>
+<p id="sdesc" style="margin:0 0 14px">Checks the request against master data before anything is computed. A missing recipe, price or unit stops the run instead of being silently defaulted.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px">
+<div><h3>Produces</h3><div id="sout" style="font-size:14px;color:var(--text-2)">Errors that stop the run, warnings that do not</div></div>
+<div><h3>Open questions</h3><div id="sq" class="row" style="gap:5px"><span class="q">C-07</span></div></div>
+</div>
+</div>
+
+<div class="row" style="margin:16px 0 20px">
+<button id="play"><span id="pico">&#9654;</span><span id="plabel">Run pipeline</span></button>
+<button id="prev" aria-label="Previous stage">&#8592;</button>
+<button id="next" aria-label="Next stage">&#8594;</button>
+<span id="count" style="font-size:13.5px;color:var(--text-3);margin-left:auto">Stage 0 of 7</span>
+</div>
+
+<div class="row" style="align-items:flex-start">
+<span class="rowlab" style="padding-top:6px">Comes out</span>
+<div class="row" style="flex:1;gap:6px">
+<span class="chip" data-o="O1">Media plan</span><span class="chip" data-o="O2">Recipe sheets</span><span class="chip" data-o="O3">Project plan</span><span class="chip" data-o="O4">Conflicts</span><span class="chip" data-o="O5">Order list</span><span class="chip" data-o="O6">Bookings</span><span class="chip" data-o="O7">LIMS export</span><span class="chip" data-o="O8">Cost sheet</span><span class="chip" data-o="O9">Quote</span><span class="chip" data-o="O10">Reference match</span>
+</div>
+</div>
+</div>
+</div></section>
+
+<section id="spine"><div class="wrap">
+<div class="lead">
+<h2>The spine of the data model</h2>
+<p>One unbroken chain runs from the protocol to the price. The protocol says what happens on which day, a phase resolves to a recipe, the recipe explodes into components, each component is a material, materials arrive as lots with expiry dates, lots are consumed by media preparations, and that consumption becomes a cost line. If any link is modelled wrongly, the reference calculation cannot match.</p>
+</div>
+<div class="card">
+<svg width="100%" viewBox="0 0 900 450" role="img" aria-labelledby="spt spd">
+<title id="spt">Data model spine</title>
+<desc id="spd">Protocol leads to phase, recipe and component; component resolves to material, which is stocked as lots, consumed by preparations and charged as cost lines. Tasks supply the volume and date.</desc>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+<g><rect x="40" y="56" width="160" height="58" rx="8" fill="var(--teal-bg)" stroke="var(--teal-br)" stroke-width="1"/>
+<text class="t" x="120" y="80" text-anchor="middle" fill="var(--teal)">Protocol</text>
+<text class="ts" x="120" y="98" text-anchor="middle" fill="var(--teal)">Phases and steps</text></g>
+<g><rect x="260" y="56" width="160" height="58" rx="8" fill="var(--teal-bg)" stroke="var(--teal-br)" stroke-width="1"/>
+<text class="t" x="340" y="80" text-anchor="middle" fill="var(--teal)">Phase</text>
+<text class="ts" x="340" y="98" text-anchor="middle" fill="var(--teal)">One media regime</text></g>
+<g><rect x="480" y="56" width="160" height="58" rx="8" fill="var(--teal-bg)" stroke="var(--teal-br)" stroke-width="1"/>
+<text class="t" x="560" y="80" text-anchor="middle" fill="var(--teal)">Recipe</text>
+<text class="ts" x="560" y="98" text-anchor="middle" fill="var(--teal)">Base plus additives</text></g>
+<g><rect x="700" y="56" width="160" height="58" rx="8" fill="var(--teal-bg)" stroke="var(--teal-br)" stroke-width="1"/>
+<text class="t" x="780" y="80" text-anchor="middle" fill="var(--teal)">Component</text>
+<text class="ts" x="780" y="98" text-anchor="middle" fill="var(--teal)">Concentration spec</text></g>
+
+<line x1="204" y1="85" x2="252" y2="85" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="424" y1="85" x2="472" y2="85" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="644" y1="85" x2="692" y2="85" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<text class="tm" x="340" y="44" text-anchor="middle">cell type and plate format pick the recipe</text>
+
+<path d="M780 118 L780 158 L120 158 L120 196" fill="none" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<text class="tm" x="450" y="150" text-anchor="middle">each component names one material</text>
+
+<g><rect x="40" y="200" width="160" height="58" rx="8" fill="var(--surface-2)" stroke="var(--border-2)" stroke-width="1"/>
+<text class="t" x="120" y="224" text-anchor="middle">Material</text>
+<text class="ts" x="120" y="242" text-anchor="middle">Pack, price, unit</text></g>
+<g><rect x="260" y="200" width="160" height="58" rx="8" fill="var(--surface-2)" stroke="var(--border-2)" stroke-width="1"/>
+<text class="t" x="340" y="224" text-anchor="middle">Lot</text>
+<text class="ts" x="340" y="242" text-anchor="middle">Quantity and expiry</text></g>
+<g><rect x="480" y="200" width="160" height="58" rx="8" fill="var(--accent-bg)" stroke="var(--accent-br)" stroke-width="1"/>
+<text class="t" x="560" y="224" text-anchor="middle" fill="var(--accent)">Preparation</text>
+<text class="ts" x="560" y="242" text-anchor="middle" fill="var(--accent)">Volume and use-by</text></g>
+<g><rect x="700" y="200" width="160" height="58" rx="8" fill="var(--coral-bg)" stroke="var(--coral-br)" stroke-width="1"/>
+<text class="t" x="780" y="224" text-anchor="middle" fill="var(--coral)">Cost line</text>
+<text class="ts" x="780" y="242" text-anchor="middle" fill="var(--coral)">Plate, batch, project</text></g>
+
+<line x1="204" y1="229" x2="252" y2="229" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="424" y1="229" x2="472" y2="229" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="644" y1="229" x2="692" y2="229" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<text class="tm" x="228" y="192" text-anchor="middle">goods receipt</text>
+<text class="tm" x="448" y="192" text-anchor="middle">consumes lots</text>
+<text class="tm" x="668" y="192" text-anchor="middle">quantity times price</text>
+
+<g><rect x="480" y="330" width="160" height="58" rx="8" fill="var(--accent-bg)" stroke="var(--accent-br)" stroke-width="1"/>
+<text class="t" x="560" y="354" text-anchor="middle" fill="var(--accent)">Task</text>
+<text class="ts" x="560" y="372" text-anchor="middle" fill="var(--accent)">One feeding, one date</text></g>
+<line x1="560" y1="326" x2="560" y2="266" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+<text class="tm" x="574" y="300" text-anchor="start">wells times volume sets the amount</text>
+
+<g><rect x="40" y="330" width="160" height="58" rx="8" fill="var(--surface-2)" stroke="var(--border-2)" stroke-width="1"/>
+<text class="t" x="120" y="354" text-anchor="middle">Plate</text>
+<text class="ts" x="120" y="372" text-anchor="middle">Format sets the volume</text></g>
+<line x1="204" y1="359" x2="472" y2="359" stroke="var(--border-2)" stroke-width="1.5" marker-end="url(#ar)"/>
+</svg>
+<div class="legend">
+<span><span class="dot" style="background:var(--teal-br)"></span>Master data</span>
+<span><span class="dot" style="background:var(--accent-br)"></span>Generated by the engine</span>
+<span><span class="dot" style="background:var(--border-2)"></span>Standard ERP machinery</span>
+<span><span class="dot" style="background:var(--coral-br)"></span>Output</span>
+</div>
+</div>
+</div></section>
+
+<section id="docs"><div class="wrap">
+<div class="lead">
+<h2>The documents</h2>
+<p>Every field carries a status. BRIEF is stated by Systasy or the problem brief. PROPOSED is our structure, to confirm or reject. OPEN is unknown and left unfilled, pointing at a question. No domain values are invented anywhere.</p>
+</div>
+<div class="grid" id="docgrid"></div>
+</div></section>
+
+<section id="questions"><div class="wrap">
+<div class="lead">
+<h2>Ask Sven Wichert these first</h2>
+<p>Ten of roughly forty five open questions. These are the ones that block the reference match, which is how the challenge is scored. The full list, grouped and prioritised, is in <a href="90_open_questions.md">90_open_questions.md</a>.</p>
+</div>
+<div class="card"><table>
+<thead><tr><th>ID</th><th>Question</th><th>Who</th></tr></thead>
+<tbody>
+<tr><td class="id">Q-G03</td><td>What does the reference calculation actually contain: totals or line items, which stages, and where does it round?</td><td class="who">Sample data</td></tr>
+<tr><td class="id">Q-K03</td><td>What is a batch in "cost per plate, batch and project"?</td><td class="who">Systasy</td></tr>
+<tr><td class="id">Q-PL01</td><td>Is the desired date the start, the readout, or the delivery of results?</td><td class="who">Systasy</td></tr>
+<tr><td class="id">Q-K01</td><td>Which cost components are in the reference: materials only, or labour, device time, overhead and margin too?</td><td class="who">Sample data</td></tr>
+<tr><td class="id">Q-K02</td><td>Is material cost charged on exact use or on opened packs, so waste is billed?</td><td class="who">Systasy</td></tr>
+<tr><td class="id">Q-L03</td><td>Dose points per substance, timepoints, and whether replicates are wells, plates or batches.</td><td class="who">Systasy</td></tr>
+<tr><td class="id">Q-O01</td><td>Which readouts are offered, and for each: added steps, materials, devices, time to data.</td><td class="who">Systasy</td></tr>
+<tr><td class="id">Q-C01</td><td>Does planning start at seeding, or does iPSC thaw and expansion count too?</td><td class="who">Expert</td></tr>
+<tr><td class="id">Q-G04</td><td>Is one project one cell type and one line, or several combined?</td><td class="who">Systasy</td></tr>
+<tr><td class="id">Q-S03</td><td>Single dose or repeated with feedings, and how many timepoints?</td><td class="who">Systasy</td></tr>
+</tbody>
+</table></div>
+</div></section>
+
+<footer><div class="wrap">Built from the team brief, systasy.de and the Systasy stem cell technician job ad. Open any document above for the detail.</div></footer>
+
+<script>
+var S=[
+{n:"Validate",d:"03_input_form, P-02",t:"Checks the request against master data before anything is computed. A missing recipe, price or unit stops the run instead of being silently defaulted.",o:"Errors that stop the run, warnings that do not",q:["C-07"],out:[]},
+{n:"Layout",d:"P-03, R-06",t:"Turns parameters into physical objects. Substances times concentrations give conditions, replicates and controls give wells, wells fill plates, plates group into batches.",o:"Conditions, wells, plates, batches",q:["Q-L02","Q-L03","Q-L04","Q-K03"],out:[]},
+{n:"Schedule",d:"E-04, P-04",t:"Places every protocol step on a calendar, counting backwards from the delivery date through readout time, the multi-week protocol, media preparation days and order lead times.",o:"Dated task list, project start date",q:["Q-PL01","Q-P01","Q-P04","Q-W01"],out:["O3"]},
+{n:"Media",d:"E-02, P-05",t:"The core of the reference match. Each feeding event gets a volume, events group into preparations that fit within shelf life, and every preparation explodes into component amounts.",o:"Preparations, component amounts, expiry dates",q:["Q-R02","Q-R04","Q-R05","Q-R06","Q-R07"],out:["O1","O2"]},
+{n:"Materials",d:"E-03, P-06",t:"Collects every demand line with its need date, nets it against lots that are still in date and against incoming orders, then rounds what is left to purchasable packs.",o:"Order list with order-by dates, reservations",q:["Q-M02","Q-M03","Q-M04"],out:["O5"]},
+{n:"Devices",d:"P-08, MD-12",t:"Two kinds of demand. A hood or liquid handler is booked per task, while incubator space is occupied by every plate for the whole run.",o:"Device bookings, capacity check",q:["Q-D01","Q-D02"],out:["O6","O7"]},
+{n:"Conflicts",d:"E-05",t:"Eleven rules run over the finished plan: weekend tasks, late orders, double bookings, reagents expiring before use. Version one warns and suggests, it does not optimise.",o:"Conflict list with severity and suggested fix",q:["Q-PL02"],out:["O4"]},
+{n:"Costs",d:"E-06, P-09",t:"Every consumed quantity meets a price, every cost line is typed and allocated to a plate, a batch or the project. This is what turns hours of manual quoting into minutes.",o:"Cost per plate, batch and project, quote",q:["Q-K01","Q-K02","Q-K03","Q-K05"],out:["O8","O9","O10"]}];
+
+var i=0,timer=null;
+var pills=[].slice.call(document.querySelectorAll('.pill'));
+var chips=[].slice.call(document.querySelectorAll('[data-o]'));
+function render(){
+ var s=S[i];
+ pills.forEach(function(p,k){p.classList.toggle('on',k===i);p.classList.toggle('done',k<i)});
+ document.getElementById('bar').style.width=Math.round(i/7*100)+'%';
+ document.getElementById('sname').textContent=s.n;
+ document.getElementById('sdoc').textContent=s.d;
+ document.getElementById('sdesc').textContent=s.t;
+ document.getElementById('sout').textContent=s.o;
+ document.getElementById('sq').innerHTML=s.q.map(function(x){return '<span class="q">'+x+'</span>'}).join('');
+ document.getElementById('count').textContent='Stage '+i+' of 7';
+ var lit={};for(var k=0;k<=i;k++)S[k].out.forEach(function(o){lit[o]=1});
+ chips.forEach(function(c){c.classList.toggle('lit',!!lit[c.getAttribute('data-o')])});
+}
+function stop(){clearInterval(timer);timer=null;document.getElementById('plabel').textContent='Run pipeline';document.getElementById('pico').innerHTML='&#9654;';}
+document.getElementById('play').onclick=function(){
+ if(timer){stop();return}
+ if(i>=7)i=0;
+ document.getElementById('plabel').textContent='Pause';
+ document.getElementById('pico').innerHTML='&#10073;&#10073;';
+ render();
+ timer=setInterval(function(){if(i>=7){stop();return}i++;render()},2200);
+};
+document.getElementById('next').onclick=function(){stop();if(i<7){i++;render()}};
+document.getElementById('prev').onclick=function(){stop();if(i>0){i--;render()}};
+pills.forEach(function(p){p.onclick=function(){stop();i=+p.getAttribute('data-i');render()}});
+render();
+
+var G=[
+["Start here","","00_INDEX|Index and conventions,01_context|Context and sources,02_glossary|Glossary,03_input_form|Input form,04_outputs|Outputs,05_standard_erp_blocks|Standard ERP blocks and what is new,06_status_models|Status models,07_architecture|Architecture,08_mvp_plan|Plan until the pitch,90_open_questions|Open questions"],
+["Master data","10_masterdata/MD-","01|cell_line|Cell line,02|cell_type|Cell type,03|protocol|Protocol,04|protocol_phase|Protocol phase,05|protocol_step|Protocol step,06|media_recipe|Media recipe,07|material|Material,08|supplier_article|Supplier article,09|plate_format|Plate format,10|substance|Substance,11|readout|Readout,12|device|Device,13|customer|Customer,14|units|Units,15|cost_rates|Cost rates,16|calendar_staff|Calendar and staff,17|calculation_settings|Calculation settings"],
+["Transactional data","20_transactions/TD-","01|screen_project|Screen project,02|screen_batch|Screen batch,03|plate_well|Plate and well,04|task|Task,05|media_preparation|Media preparation,06|stock_lot_movement|Stock lot and movement,07|reservation|Reservation,08|order_list_po|Order list and PO,09|device_booking|Device booking,10|cost_quote|Cost and quote,11|lims_sample|LIMS sample,12|audit_trace|Audit and trace"],
+["Relations","30_relations/R-","00|er_overview|ER overview,01|protocol_phase_step|Protocol, phase, step,02|recipe_resolution|Recipe resolution,03|recipe_bom|Recipe bill of materials,04|material_supplier|Material and supplier,05|project_inputs|Project inputs,06|project_batch_plate_well|Project to well,07|plate_format_volumes|Plate format volumes,08|step_resources|Step resources,09|readout_steps|Readout steps,10|material_lot_stock|Material, lot, stock,11|task_preparation_lots|Task, preparation, lots,12|project_cost_lines|Project cost lines"],
+["Processes","40_processes/P-","01|masterdata_import|Master data import,02|request_intake|Request intake,03|layout_expansion|Layout expansion,04|schedule_backward|Backward scheduling,05|media_calculation|Media calculation,06|material_requirements_stock|Materials and stock,07|procurement|Procurement,08|device_booking|Device booking,09|costing_quote_release|Costing and release,10|execution_tracking|Execution tracking,11|lims_export|LIMS export,12|reference_validation|Reference validation"],
+["Calculation engine","50_engine/E-","01|pipeline|Pipeline,02|media_calculation|Media calculation,03|material_requirements|Material requirements,04|scheduling|Scheduling,05|conflict_rules|Conflict rules,06|costing|Costing,07|rounding_trace_validation|Rounding, trace, validation"]];
+
+document.getElementById('docgrid').innerHTML=G.map(function(g){
+ var items=g[2].split(',').map(function(e){
+  var p=e.split('|');
+  if(g[1]===''){return '<li><a href="'+p[0]+'.md"><span class="id">'+p[0].split('_')[0]+'</span><span>'+p[1]+'</span></a></li>';}
+  return '<li><a href="'+g[1]+p[0]+'_'+p[1]+'.md"><span class="id">'+p[0]+'</span><span>'+p[2]+'</span></a></li>';
+ }).join('');
+ return '<div class="card"><h3>'+g[0]+'</h3><ul class="docs">'+items+'</ul></div>';
+}).join('');
+</script>
+</body>
+</html>
